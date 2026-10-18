@@ -158,6 +158,15 @@ function instanceInfo(n) {
   if (!sym) return { component: '(missing)' };
   usedSymbols.add(gid(sym.guid));
   const props = {};
+  // Start from the component's defaults (props the instance does not override keep them).
+  const holder = sym.componentPropDefs?.length ? sym : byId.get(gid(sym.parentIndex?.guid));
+  const assigned = new Set((n.componentPropAssignments ?? []).map((a) => gid(a.defID)));
+  for (const d of holder?.componentPropDefs ?? []) {
+    if (assigned.has(gid(d.id)) || !d.name) continue;
+    const v = d.initialValue ?? {};
+    const val = v.textValue?.characters ?? v.boolValue ?? (v.guidValue ? byId.get(gid(v.guidValue))?.name : undefined);
+    if (val !== undefined) props[d.name.replace(/#\d+:\d+$/, '')] = val;
+  }
   for (const a of n.componentPropAssignments ?? []) {
     let name = propDefs.get(gid(a.defID)) ?? gid(a.defID);
     for (let k = 2; name in props; k++) name = `${name.replace(/#\d+$/, '')}#${k}`; // several props can share a layer name
