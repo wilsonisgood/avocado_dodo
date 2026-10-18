@@ -20,9 +20,9 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 | # | 模組 | frame | 建議 model／預算 | 依賴 | 狀態 |
 |---|---|---|---|---|---|
 | M-1 | onboarding | 01、02、03-1～03-3 | sonnet 45 | — | 🔵 sonnet／45 輪，worktree `.claude/worktrees/onboarding`、分支 `feat/onboarding`；看 `git log` 和回報 |
-| M-2 | meals | 05-0～05-5、05-2a/2b、05-S1/S2、12-R1、12-F1/F2 | sonnet 60 | — | 🔵 sonnet／60 輪，worktree `.claude/worktrees/meals`、分支 `feat/meals`；看 `git log` 和回報 |
+| M-2 | meals | 05-0～05-5、05-2a/2b、05-S1/S2、12-R1、12-F1/F2 | sonnet 60 | — | ✅ 2026-10-19 合併（14/60 輪）|
 | M-3 | movement | 08-0～08-7 | sonnet 55 | — | 🔵 sonnet／55 輪，worktree `.claude/worktrees/movement`、分支 `feat/movement`；看 `git log` 和回報 |
-| M-4 | mood | 07-0～07-5、07-S1/S2 | sonnet 50 | — | 🔵 sonnet／50 輪，worktree `.claude/worktrees/mood`、分支 `feat/mood`；看 `git log` 和回報 |
+| M-4 | mood | 07-0～07-5、07-S1/S2 | sonnet 50 | — | ✅ 2026-10-19 合併（14/50 輪）|
 | M-5a | appointments 列表／月曆 | 09-0～09-2c、09-E0、09-R* | sonnet 55 | — | ⬜ |
 | M-5b | appointments 新增／編輯／詳情 | 09-3～09-13、09-S* | sonnet 60 | M-5a | ⬜ |
 | M-6 | records（05.Health Record 彙整頁） | 05.Health Record | sonnet 40 | M-2、M-3、M-4 | ⬜ |
@@ -32,3 +32,8 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 | M-10 | home | 04.Main Page | sonnet 45 | 全部（彙整各模組資料） | ⬜ |
 
 待決（模組任務自己決定並寫進回報）：每日簽到（+5）在什麼時候觸發——預設「每天第一次打開 App」。
+
+## 細修清單（不派任務，主 session 收集起來一次修，AGENT §3b）
+
+- 時間欄位：飲食用原生 `<input type="time">`，會顯示「06:30 PM」，設計稿是「18:30」。等 M-5b 做出時間選擇器（09-S6）後統一換掉。
+- 共用 Sheet 加 `trailing`（標題列右側），飲食的食物編輯「Close」改放進去。
