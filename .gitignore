@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+# generated from design/*.fig by tools/fig (re-generate with npm run fig)
+design/.cache/
+design/spec/
+design/ref/
+shots/
+.claude/worktrees/
+.cache/

@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+/* Fonts bundled from npm (@fontsource) — no Google Fonts request at runtime. */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/600.css';
+@import './tokens.css';
+@import './theme.css';
+
+/* Theme follows the OS unless the user picks one (data-theme set by app/theme.ts). */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--nestly-color-text-primary);
+  background: var(--nestly-color-bg-canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  cursor: pointer;
+}
