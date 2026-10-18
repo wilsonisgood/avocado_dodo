@@ -23,6 +23,8 @@ export type Profile = Entity & {
   /** One name for one baby, two (A, B) for twins; empty strings when skipped. */
   babyNames: string[];
   pregnancy: PregnancyBasis | null;
+  /** 02.WelcomPage_file. Age is derived from it, never stored. */
+  birthDate?: ISODate;
   body: { heightCm?: number; prePregnancyWeightKg?: number; currentWeightKg?: number; waistCm?: number; updatedOn?: ISODate };
 };
 
