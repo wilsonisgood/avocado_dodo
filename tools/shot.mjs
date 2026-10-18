@@ -23,10 +23,13 @@ for (let i = 0; i < args.length; i++) {
 }
 if (!routes.length) routes.push('');
 
-const server = await createServer({ root, logLevel: 'error', server: { port: 0 } });
+// Per-checkout Vite cache and per-run browser profile, so several worktrees can shoot at the same time.
+const tag = path.basename(root);
+const server = await createServer({ root, logLevel: 'error', cacheDir: path.join(root, '.cache/vite', tag), server: { port: 0 } });
 await server.listen();
 const base = server.resolvedUrls.local[0];
-const browser = await chromium.launchPersistentContext(path.join(root, '.cache/shot-profile'), {
+const profile = path.join(root, '.cache/shot-profile', `${tag}-${process.pid}`);
+const browser = await chromium.launchPersistentContext(profile, {
   viewport: { width: 420, height: 896 },
   deviceScaleFactor: 2,
   colorScheme: flag('--dark') ? 'dark' : 'light',
@@ -71,6 +74,7 @@ for (const route of routes) {
 
 await browser.close();
 await server.close();
+fs.rmSync(profile, { recursive: true, force: true });
 if (errors.length) {
   console.log(`\n${errors.length} error(s):\n${[...new Set(errors)].join('\n')}`);
   process.exit(1);
