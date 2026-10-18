@@ -15,7 +15,7 @@ if (args[0] === '--component') {
 const short = (v) => (typeof v === 'string' ? v.replace(/var\(--nestly-(color-)?([^)]+)\)/g, '$$$2') : JSON.stringify(v));
 function line(n, depth) {
   const bits = [];
-  bits.push(n.type === 'TEXT' ? `T "${(n.text ?? '').replace(/\n/g, '⏎').slice(0, 80)}"` : n.type === 'INSTANCE' ? `<${n.component}>` : `${n.type[0]} ${n.name}`);
+  bits.push(n.type === 'TEXT' ? `T "${(n.text ?? '').replace(/\n/g, '⏎')}"` : n.type === 'INSTANCE' ? `<${n.component}>` : `${n.type[0]} ${n.name}`);
   bits.push(`${n.w}×${n.h}`);
   if (n.x != null) bits.push(`@${n.x},${n.y}`);
   if (n.rotate) bits.push(`rot${n.rotate}`);
