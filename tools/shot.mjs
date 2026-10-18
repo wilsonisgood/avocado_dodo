@@ -1,5 +1,6 @@
 // Screenshot acceptance tool (CLAUDE.md 憲法 1, METHOD §4).
-//   node tools/shot.mjs [--demo] [--dark] [--full] [--click "Text"]... <route> [<route>...]
+//   node tools/shot.mjs [--demo] [--dark] [--full] [--reload] [--click "Text"]... <route> [<route>...]
+//   --reload: after the clicks, reload the page before the shot (proves data was persisted)
 //   e.g. node tools/shot.mjs --demo --full home tasks meals/new
 // Routes are app hash routes (#/home), written without a leading slash; "playground" is the in-app dev menu.
 // Starts its own Vite dev server, opens each route at 420×896 in Playwright's Chromium kept inside the
@@ -54,7 +55,14 @@ for (const route of routes) {
   await page.setViewportSize({ width: 420, height: 896 });
   await page.goto(`${base}#/${route}`);
   await page.waitForLoadState('networkidle');
-  for (const text of clicks) await page.getByText(text, { exact: true }).first().click();
+  for (const text of clicks) {
+    await page.getByText(text, { exact: true }).first().click();
+    await page.waitForTimeout(150);
+  }
+  if (flag('--reload')) {
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+  }
   await page.waitForTimeout(300);
   if (flag('--full')) {
     // The app scrolls inside the phone screen; grow the viewport to the content instead of using fullPage.
@@ -65,11 +73,11 @@ for (const route of routes) {
     if (extra > 0) await page.setViewportSize({ width: 420, height: 896 + extra });
     await page.waitForTimeout(200);
   }
-  const name = (route.replace(/[/?=&]+/g, '_') || 'root') + (flag('--dark') ? '.dark' : '') + '.png';
+  const name = (route.replace(/[/?=&]+/g, '_') || 'root') + (flag('--reload') ? '.reloaded' : '') + (flag('--dark') ? '.dark' : '') + '.png';
   const file = path.join(root, 'shots', name);
   await page.screenshot({ path: file });
   const text = (await page.locator('#phone-screen').innerText()).replace(/\s+/g, ' ').slice(0, 160);
-  console.log(`#/${route} -> shots/${name} | ${text}`);
+  console.log(`#/${route}${page.url().endsWith(route) ? '' : ` (now ${page.url().split('#')[1]})`} -> shots/${name} | ${text}`);
 }
 
 await browser.close();
