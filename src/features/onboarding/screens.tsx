@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, type Dispatch, type SetStateAction } from 'react';
-import { Navigate, Outlet, useNavigate } from 'react-router';
+import { createContext, useContext, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router';
 import { Button, Chip, FieldControl, Icon, Input, LabeledField, cx } from '@/components';
+import { BabyStepIcon, FieldIcon, ProfileHeroIcon, WelcomeHeroIcon } from './vectors';
 import { keys, useAction, useProfile } from '@/data/queries';
 import { profileService, today } from '@/data/services';
 import type { BabyCount } from '@/data/types';
@@ -19,9 +20,24 @@ export function WelcomeFlow() {
   return (
     <FlowContext.Provider value={{ draft, set }}>
       <div className="relative flex min-h-full flex-col overflow-hidden bg-bg-canvas">
-        <Outlet />
+        <Blobs />
+        <div className="relative flex min-h-full flex-1 flex-col">
+          <Outlet />
+        </div>
       </div>
     </FlowContext.Provider>
+  );
+}
+
+/** Blurred decorative circles behind 01/02 (the 03 screens have none). */
+function Blobs() {
+  const { pathname } = useLocation();
+  if (pathname.endsWith('/baby')) return null;
+  return (
+    <>
+      <span className="pointer-events-none absolute -right-10 -top-8 size-40 rounded-full bg-bg-blush opacity-20 blur-[64px]" aria-hidden />
+      <span className="pointer-events-none absolute -bottom-10 -left-8 size-32 rounded-full bg-bg-soft opacity-20 blur-[64px]" aria-hidden />
+    </>
   );
 }
 
@@ -35,11 +51,11 @@ function Dots({ step }: { step: 1 | 2 }) {
   );
 }
 
-function Hero({ icon, title, sub, big }: { icon: 'Profile' | 'Record'; title: string; sub: string; big?: boolean }) {
+function Hero({ icon, title, sub, big }: { icon: ReactNode; title: string; sub: string; big?: boolean }) {
   return (
     <div className="flex flex-col items-center gap-4 text-center">
-      <div className={cx('flex items-center justify-center rounded-999 bg-bg-subtle-soft text-icon-default', big ? 'size-20' : 'size-16')}>
-        <Icon name={icon} size={big ? 40 : 32} />
+      <div className={cx('flex items-center justify-center rounded-999 text-icon-default', big ? 'bg-bg-subtle-soft' : 'bg-bg-subtle-blush', big ? 'size-20' : 'size-16')}>
+        {icon}
       </div>
       <div className="flex flex-col gap-1">
         <h1 className={cx('text-text-primary', big ? 'type-heading-large' : 'type-heading-medium')}>{title}</h1>
@@ -69,7 +85,7 @@ export function NicknameStep() {
         }}
       >
         <div className="flex flex-1 flex-col justify-center gap-6">
-          <Hero big icon="Profile" title="Welcome to Nestly!" sub="What would you like us to call you?" />
+          <Hero big icon={<WelcomeHeroIcon />} title="Welcome to Nestly!" sub="What would you like us to call you?" />
           <Input
             label="Your nickname"
             placeholder="e.g. Amy"
@@ -101,7 +117,7 @@ export function ProfileStep() {
       <Dots step={2} />
       <div className="flex flex-1 flex-col justify-between gap-8 px-8 pb-8 pt-8">
         <div className="flex flex-col gap-6">
-          <Hero icon="Record" title="Create your health profile" sub="A few details to personalize your experience" />
+          <Hero icon={<ProfileHeroIcon />} title="Create your health profile" sub="A few details to personalize your experience" />
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-3">
               <LabeledField label="Date of birth">
@@ -113,14 +129,14 @@ export function ProfileStep() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <LabeledField label="Height (cm)">
-                <FieldControl {...bind('height', '160')} />
+                <div className="relative"><FieldControl className="pl-10" {...bind('height', '160')} /><FieldIcon kind="height" /></div>
               </LabeledField>
               <LabeledField label="Weight (kg)">
-                <FieldControl {...bind('weight', '55')} />
+                <div className="relative"><FieldControl className="pl-10" {...bind('weight', '55')} /><FieldIcon kind="weight" /></div>
               </LabeledField>
             </div>
             <LabeledField label="Waist size (cm)">
-              <FieldControl {...bind('waist', 'e.g. 82')} />
+              <div className="relative"><FieldControl className="pl-10" {...bind('waist', 'e.g. 82')} /><FieldIcon kind="waist" /></div>
             </LabeledField>
           </div>
         </div>
@@ -173,7 +189,7 @@ export function BabyStep() {
           <span key={i} className="h-1 flex-1 rounded-999 bg-bg-success" />
         ))}
       </div>
-      <Icon name="Profile" size={26} className="text-icon-default" />
+      {draft.babyCount === 'unconfirmed' ? <Icon name="Profile" size={26} className="text-icon-default" /> : <BabyStepIcon twins={draft.babyCount === 'twins'} />}
       <h1 className="type-heading-large text-text-primary">Let&apos;s meet your little one</h1>
       <p className="type-body-default text-text-secondary">Choose what you know. You can update it later.</p>
       <div className="flex gap-2">
