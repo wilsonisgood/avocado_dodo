@@ -16,6 +16,8 @@
 6. **元件屬性名稱會撞名**：連到元件庫的屬性沒有本地名稱，退而用圖層名（如 `Label.text`），同一個元件可能有三個。
    spec 會加上 `#2`、`#3`；Input 的順序是「標籤、值、說明文字」。
 7. 元件庫的變數副本（變數集 id 是 `assetRef` 的那兩組）是過時的，**以本地變數集為準**（`tools/fig/lib.mjs` `localVariables`）。
+8. **instance 沒覆寫的屬性沿用元件預設值**（`componentPropDefs[].initialValue`，放在元件或它的 component set 上）；
+   只讀 `componentPropAssignments` 會漏掉預設文字（例：08-2 的胎動安全提示）。spec 已合併預設值（2026-10-19 修）。
 
 ## §mcp Figma MCP
 
