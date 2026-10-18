@@ -19,10 +19,10 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 
 | # | 模組 | frame | 建議 model／預算 | 依賴 | 狀態 |
 |---|---|---|---|---|---|
-| M-1 | onboarding | 01、02、03-1～03-3 | sonnet 45 | — | ⬜ |
-| M-2 | meals | 05-0～05-5、05-2a/2b、05-S1/S2 | sonnet 60 | — | ⬜ |
-| M-3 | movement | 08-0～08-7 | sonnet 55 | — | ⬜ |
-| M-4 | mood | 07-0～07-5、07-S1/S2 | sonnet 50 | — | ⬜ |
+| M-1 | onboarding | 01、02、03-1～03-3 | sonnet 45 | — | 🔵 sonnet／45 輪，worktree `.claude/worktrees/onboarding`、分支 `feat/onboarding`；看 `git log` 和回報 |
+| M-2 | meals | 05-0～05-5、05-2a/2b、05-S1/S2、12-R1、12-F1/F2 | sonnet 60 | — | 🔵 sonnet／60 輪，worktree `.claude/worktrees/meals`、分支 `feat/meals`；看 `git log` 和回報 |
+| M-3 | movement | 08-0～08-7 | sonnet 55 | — | 🔵 sonnet／55 輪，worktree `.claude/worktrees/movement`、分支 `feat/movement`；看 `git log` 和回報 |
+| M-4 | mood | 07-0～07-5、07-S1/S2 | sonnet 50 | — | 🔵 sonnet／50 輪，worktree `.claude/worktrees/mood`、分支 `feat/mood`；看 `git log` 和回報 |
 | M-5a | appointments 列表／月曆 | 09-0～09-2c、09-E0、09-R* | sonnet 55 | — | ⬜ |
 | M-5b | appointments 新增／編輯／詳情 | 09-3～09-13、09-S* | sonnet 60 | M-5a | ⬜ |
 | M-6 | records（05.Health Record 彙整頁） | 05.Health Record | sonnet 40 | M-2、M-3、M-4 | ⬜ |
