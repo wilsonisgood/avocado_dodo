@@ -1,9 +1,8 @@
-import { Button, Icon, RecordEmpty, RecordHeader, RecordPage, RecordRow, TextArea } from '@/components';
-import { appointmentTypeLabel } from '@/data/labels';
+import { Button, RecordEmpty, RecordHeader, RecordPage, RecordRow, TextArea } from '@/components';
 import { keys, useAction, useAppointment } from '@/data/queries';
 import { appointmentService, clock, today } from '@/data/services';
-import type { Appointment } from '@/data/types';
 import { useNavigate, useParams } from 'react-router';
+import { ScheduleCard } from '../ScheduleCard';
 import { detailView, whenText } from './logic';
 import { useLeave } from './useLeave';
 
@@ -22,31 +21,6 @@ const nowParts = () => {
   return [today(), `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}`] as const;
 };
 
-/** Nestly/ScheduleCard (not in @/components yet): type + status, name, when, where, reminder line. */
-function ScheduleCard({ appt, status, line }: { appt: Appointment; status: string; line: string }) {
-  return (
-    <section className="flex flex-col gap-2 rounded-16 bg-bg-surface p-4">
-      <div className="flex items-center gap-2">
-        <Icon name="Calendar" size={16} />
-        <span className="flex-1 type-caption-strong text-text-brand">{appointmentTypeLabel(appt.type)}</span>
-        <span className="type-caption-default text-text-secondary">{status}</span>
-      </div>
-      <h2 className="type-heading-small text-text-primary">{appt.name}</h2>
-      <div className="flex items-center gap-2 text-text-secondary">
-        <Icon name="Clock" size={16} />
-        <span className="type-body-default">{whenText(appt)}</span>
-      </div>
-      {appt.location && (
-        <div className="flex items-center gap-2 text-text-secondary">
-          <Icon name="Location" size={16} />
-          <span className="type-body-default">{appt.location}</span>
-        </div>
-      )}
-      <p className="type-caption-default text-text-secondary">{line}</p>
-    </section>
-  );
-}
-
 /** 09-6…09-13 Appointment details. */
 export function AppointmentDetails() {
   const { id } = useParams();
@@ -62,7 +36,7 @@ export function AppointmentDetails() {
     <RecordPage className="gap-4">
       <RecordHeader title="Appointment details" onBack={leave} />
       {view.banner && <p className="type-label-default text-text-brand">{view.banner}</p>}
-      <ScheduleCard appt={appt} status={view.status} line={view.cardLine} />
+      <ScheduleCard appt={appt} status={view.status} when={whenText(appt)} footer={view.cardLine} />
       <RecordRow title="Reminder" detail={view.rowDetail} />
       {appt.notes.trim() && <TextArea value={`Notes\n${appt.notes}`} readOnly aria-label="Notes" />}
       <Button block disabled={complete.isPending} onClick={() => complete.mutate([appt.id, view.primaryDone])}>{view.primaryLabel}</Button>

@@ -1,39 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
-import { Button, Icon, MonthCalendar, RecordEmpty, RecordHeader, RecordPage, SegmentedTabs, monthOf } from '@/components';
-import { appointmentTypeLabel } from '@/data/labels';
+import { Button, MonthCalendar, RecordEmpty, RecordHeader, RecordPage, SegmentedTabs, monthOf } from '@/components';
 import { useAppointments } from '@/data/queries';
 import { today as todayISO } from '@/data/services';
 import type { Appointment, ISODate } from '@/data/types';
+import { ScheduleCard } from '../ScheduleCard';
 import { cardTexts, dayHeading, defaultDay, eventDates, splitAppointments, upcomingSummary, type ListNotice, type Tab, type View } from './logic';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const monthName = (d: ISODate) => `${MONTHS[Number(d.slice(5, 7)) - 1]} ${d.slice(0, 4)}`;
 
-/** Nestly/ScheduleCard: type + status, title, when, location, footer line. */
-function ScheduleCard({ a, today, onClick }: { a: Appointment; today: ISODate; onClick: () => void }) {
+function ListCard({ a, today, onClick }: { a: Appointment; today: ISODate; onClick: () => void }) {
     const t = cardTexts(a, today);
-    return (
-        <button type="button" onClick={onClick} className="flex w-full flex-col gap-2 rounded-16 bg-bg-surface p-4 text-left">
-            <span className="flex w-full items-center gap-2">
-                <Icon name="Calendar" size={16} className="text-icon-default" />
-                <span className="flex-1 type-caption-strong text-text-brand">{appointmentTypeLabel(a.type)}</span>
-                <span className="type-caption-default text-text-secondary">{t.status}</span>
-            </span>
-            <span className="type-heading-small text-text-primary">{a.name}</span>
-            <span className="flex items-center gap-2">
-                <Icon name="Clock" size={16} className="text-icon-default" />
-                <span className="flex-1 type-body-default text-text-secondary">{t.when}</span>
-            </span>
-            {a.location && (
-                <span className="flex items-center gap-2">
-                    <Icon name="Location" size={16} className="text-icon-default" />
-                    <span className="flex-1 type-body-default text-text-secondary">{a.location}</span>
-                </span>
-            )}
-            <span className="type-caption-default text-text-secondary">{t.footer}</span>
-        </button>
-    );
+    return <ScheduleCard appt={a} status={t.status} when={t.when} footer={t.footer} onClick={onClick} />;
 }
 
 /** 09-0 Upcoming · 09-1 Past · 09-2/2b/2c Calendar · 09-E0 Empty · 09-R1…R3 after delete / complete. */
@@ -101,7 +80,7 @@ export function AppointmentsPage() {
                 {day.length === 0 ? (
                     <RecordEmpty title="Nothing planned today">Enjoy a little breathing room, or add an appointment.</RecordEmpty>
                 ) : (
-                    day.map((a) => <ScheduleCard key={a.id} a={a} today={today} onClick={() => open(a)} />)
+                    day.map((a) => <ListCard key={a.id} a={a} today={today} onClick={() => open(a)} />)
                 )}
                 {(day.length === 0 || tab === 'upcoming') && <Button block onClick={() => add(selected)}>{day.length === 0 ? 'Add for this day' : '＋ Add appointment'}</Button>}
             </RecordPage>
@@ -126,7 +105,7 @@ export function AppointmentsPage() {
                 {controls}
                 <Button block onClick={() => add()}>＋ Add appointment</Button>
                 <p className="type-caption-strong text-text-secondary">{upcomingSummary(upcoming, monthName)}</p>
-                {upcoming.map((a) => <ScheduleCard key={a.id} a={a} today={today} onClick={() => open(a)} />)}
+                {upcoming.map((a) => <ListCard key={a.id} a={a} today={today} onClick={() => open(a)} />)}
                 <p className="type-caption-default text-text-secondary">Keep prenatal visits, injections, blood tests and other health plans here.</p>
             </RecordPage>
         );
@@ -137,7 +116,7 @@ export function AppointmentsPage() {
             {header}
             {controls}
             <h2 className="type-heading-small text-text-primary">Past appointments</h2>
-            {past.map((a) => <ScheduleCard key={a.id} a={a} today={today} onClick={() => open(a)} />)}
+            {past.map((a) => <ListCard key={a.id} a={a} today={today} onClick={() => open(a)} />)}
             <p className="type-caption-default text-text-secondary">Past dates aren't marked complete automatically. Update the status in details.</p>
             <Button block variant="outline" onClick={() => add()}>＋ Add appointment</Button>
         </RecordPage>

@@ -1,6 +1,6 @@
 // Display labels shared by several modules (appointments list / details, home). Text is from the design.
 import { daysBetween } from './rules';
-import type { AppointmentType, ISODate, Reminder } from './types';
+import type { AppointmentType, ISODate } from './types';
 
 export const APPOINTMENT_TYPES: { value: AppointmentType; label: string }[] = [
   { value: 'prenatal', label: 'Prenatal' },
@@ -27,8 +27,5 @@ export function shortDateWithWeekday(date: ISODate) {
   return `${MONTH[m - 1]} ${d}, ${WEEKDAY[new Date(y, m - 1, d).getDay()]}`;
 }
 
-export function reminderLabel(r: Reminder) {
-  if (r.kind === 'none') return 'No reminder';
-  if (r.kind === 'custom') return r.minutesBefore % 1440 === 0 ? `${r.minutesBefore / 1440} day(s) before` : `${r.minutesBefore} min before`;
-  return { '1h': '1 hour before', '1d': '1 day before', '1d+1h': '1 day & 1 hour before' }[r.preset];
-}
+/** Kept for existing callers; same text as reminderText. */
+export { reminderText as reminderLabel } from './reminders';
