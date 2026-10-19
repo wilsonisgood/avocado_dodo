@@ -5,19 +5,23 @@ import { settingsService } from '@/data/services';
 import type { NotificationSettings, ReminderKey } from '@/data/types';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { useT } from '@/i18n';
+import { messages } from './i18n';
 import { isDirty, isOn, masterText, permissionLine, savedNotice, scheduleText, setOn } from './logic';
 import { useLeave } from './useLeave';
 
-const ROWS: { key: ReminderKey; icon: IconName; title: string; description: string }[] = [
-  { key: 'appointments', icon: 'Calendar', title: 'Appointment reminders', description: 'Prenatal visits, injections and blood tests' },
-  { key: 'meals', icon: 'Food', title: 'Meal log', description: 'Breakfast, lunch and dinner' },
-  { key: 'mood', icon: 'Mood', title: 'Mood journal', description: 'Take a moment to note your feelings' },
-  { key: 'movement', icon: 'Kick', title: 'Movement notes', description: 'Turn on if it suits your needs' },
-  { key: 'weekly', icon: 'Milestone', title: 'Weekly updates', description: "Discover this week's little changes" },
+type Msgs = typeof messages.en;
+const rows = (t: Msgs): { key: ReminderKey; icon: IconName; title: string; description: string }[] => [
+  { key: 'appointments', icon: 'Calendar', title: t.appointmentReminders, description: t.appointmentRemindersDesc },
+  { key: 'meals', icon: 'Food', title: t.mealLog, description: t.mealLogDesc },
+  { key: 'mood', icon: 'Mood', title: t.moodJournal, description: t.moodJournalDesc },
+  { key: 'movement', icon: 'Kick', title: t.movementNotes, description: t.movementNotesDesc },
+  { key: 'weekly', icon: 'Milestone', title: t.weeklyUpdates, description: t.weeklyUpdatesDesc },
 ];
 
 /** 11-1 … 11-3d: master switch + one row per reminder; edits stay local until "Save settings". */
 export function Notifications() {
+  const t = useT(messages);
   const { data } = useSettings();
   const leave = useLeave('/settings');
   const navigate = useNavigate();
@@ -36,19 +40,19 @@ export function Notifications() {
     setNotice(null);
   };
   const onSave = async () => {
-    if (notice === 'Saved: All reminders off' && !isDirty(data.notifications, draft)) return navigate('/settings');
+    if (notice === t.savedAllOff && !isDirty(data.notifications, draft)) return navigate('/settings');
     await save.mutateAsync([{ notifications: draft }]);
     setNotice(savedNotice(data.notifications, draft));
   };
 
   return (
     <RecordPage className="gap-3">
-      <RecordHeader title="Notifications" onBack={leave} />
+      <RecordHeader title={t.notifications} onBack={leave} />
       {notice && <p className="type-caption-strong text-text-brand">{notice}</p>}
       <NotificationRow
         icon="Settings"
-        title="All reminders"
-        description="Control all Nestly reminders"
+        title={t.allReminders}
+        description={t.allRemindersDesc}
         schedule={masterText(draft.all)}
         checked={draft.all}
         onClick={() => change({ ...draft, all: !draft.all })}
@@ -57,7 +61,7 @@ export function Notifications() {
       <button type="button" onClick={() => navigate('/settings/permission')} className="text-left type-caption-default text-text-secondary">
         {permissionLine(draft.devicePermission)}
       </button>
-      {ROWS.map((r) => (
+      {rows(t).map((r) => (
         <NotificationRow
           key={r.key}
           icon={r.icon}
@@ -71,7 +75,7 @@ export function Notifications() {
         />
       ))}
       <Button block onClick={onSave}>
-        Save settings
+        {t.saveSettings}
       </Button>
     </RecordPage>
   );
