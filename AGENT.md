@@ -80,6 +80,9 @@
   4. 資料層：型別、service 介面、localStorage adapter、**跨模組事件介面**（例：`rewards.award('meal_logged')`）
   5. 素材：圖片和圖示放進 `public/`，產出清單
   6. 每個畫面的 `design/spec/*.json` 和參考圖
+- **先抽共用再派工**：把這批每個模組的 spec 掃一遍（`outline.mjs … | grep '<Nestly/'`），
+  ≥ 2 個模組會用到的元件、格式化函式、標籤文字，主 session 先做進 `src/components`／`src/data`，寫進 playground，再派。
+  同一模組要拆給兩個任務時，先拆成子資料夾（例：`appointments/list/`、`appointments/form/`），各自擁有。
 - **檔案不重疊**：每個模組任務只擁有 `src/features/<模組>/`。共用檔（`src/components/`、`src/data/` 的介面、
   路由註冊、`App.tsx`、`package.json`、色票）走整合事項。
 - **跨模組的連動**（任務 ↔ 飲食／心情／胎動 ↔ 點數 ↔ 商店 ↔ 首頁）：模組只呼叫地基定好的介面，

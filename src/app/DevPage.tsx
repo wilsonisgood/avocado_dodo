@@ -14,6 +14,8 @@ import {
   Input,
   LabeledField,
   MoodChoice,
+  MonthCalendar,
+  TimeFields,
   NotificationRow,
   RecordEmpty,
   RecordHeader,
@@ -43,6 +45,9 @@ export function DevPage() {
   const [on, setOn] = useState(true);
   const [tab, setTab] = useState<'up' | 'past'>('up');
   const [dialog, setDialog] = useState<'confirm' | 'reward' | null>(null);
+  const [month, setMonth] = useState('2026-10-01');
+  const [day, setDay] = useState('2026-10-22');
+  const [time, setTime] = useState('08:30');
 
   const run = async (fn: () => Promise<unknown>, to: string) => {
     await fn();
@@ -146,6 +151,10 @@ export function DevPage() {
         <FruitCompanion week={12} accessory="leaf" size={96} />
       </div>
       <CompanionProgress percent={72} caption="2/3 tasks done today" className="rounded-16 bg-bg-surface p-4" />
+
+      <SectionHeader>Schedule</SectionHeader>
+      <MonthCalendar month={month} onMonthChange={setMonth} selected={day} onSelect={setDay} events={new Set(['2026-10-08', '2026-10-22'])} />
+      <TimeFields title="Appointment time" value={time} onChange={setTime} />
 
       <SectionHeader>Dialogs</SectionHeader>
       <div className="flex gap-2">

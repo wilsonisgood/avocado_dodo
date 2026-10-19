@@ -7,4 +7,5 @@ export { RecordHeader, RecordMetric, RecordNotice, RecordRow, RecordEmpty, Secti
 export { ConfirmDialog, CompanionDialog, Sheet, NotificationRow } from './overlays';
 export { BottomNavigation } from './navigation';
 export { FruitCompanion, CompanionProgress, MoodChoice, moodMeta, fruitImageForWeek, asset, type MoodKind } from './companion';
+export { MonthCalendar, TimeFields, monthOf, shiftMonth, monthLabel, monthGrid, formatDateLong } from './schedule';
 export { cx } from './cx';

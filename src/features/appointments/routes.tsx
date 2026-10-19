@@ -1,11 +1,7 @@
 import type { ModuleRoutes } from '@/app/moduleRoutes';
-import { Placeholder } from '@/app/Placeholder';
+import { routes as list } from './list/routes';
+import { routes as form } from './form/routes';
 
-// Health appointments (09-*). Owned by the appointments module task: replace the placeholders with real screens.
-export const routes: ModuleRoutes = {
-  tab: [
-  ],
-  stack: [
-    { path: 'appointments', element: <Placeholder title="Health appointments" frames="09-*" /> },
-  ],
-};
+// Appointments is built by two tasks: list/ (M-5a: list, past, calendar) and form/ (M-5b: new, edit, details,
+// pickers, reminders). Each owns only its folder; this file just joins them. Static paths come before :id.
+export const routes: ModuleRoutes = { tab: [], stack: [...list, ...form] };
