@@ -4,19 +4,23 @@ import { Button, RecordHeader, RecordMetric, RecordPage, TextArea } from '@/comp
 import { keys, useAction, useMovement, useProfile } from '@/data/queries';
 import { movementService } from '@/data/services';
 import type { MovementSession } from '@/data/types';
+import { useT } from '@/i18n';
+import { messages } from './i18n';
 import { MovementNotice } from './shared';
 import { countLabel, dateSlash, hm, hms } from './time';
 
 /** 08-4 · Session summary. */
 export function ReviewPage() {
+  const t = useT(messages);
   const { id } = useParams();
   const m = useMovement(id);
   if (m.isLoading) return <RecordPage>{null}</RecordPage>;
-  if (!m.data) return <RecordPage><RecordHeader title="Session summary" onBack={() => history.back()} /></RecordPage>;
+  if (!m.data) return <RecordPage><RecordHeader title={t.sessionSummary} onBack={() => history.back()} /></RecordPage>;
   return <Review session={m.data} />;
 }
 
 function Review({ session }: { session: MovementSession }) {
+  const t = useT(messages);
   const navigate = useNavigate();
   const profile = useProfile();
   const [notes, setNotes] = useState(session.notes);
@@ -28,10 +32,10 @@ function Review({ session }: { session: MovementSession }) {
 
   return (
     <RecordPage>
-      <RecordHeader title="Session summary" fallback="/movement" />
-      <RecordMetric label="Movements this session" value={countLabel(session.movements.length)} detail={range} />
-      <TextArea aria-label="Notes (optional)" placeholder="Notes (optional) e.g. Felt movement while resting. Location uncertain." value={notes} onChange={(e) => setNotes(e.target.value)} />
-      {profile.data?.babyCount === 'twins' && <p className="type-caption-default text-text-secondary">Twins: This is an overall observation, not a separate assessment of each baby.</p>}
+      <RecordHeader title={t.sessionSummary} fallback="/movement" />
+      <RecordMetric label={t.metricLabel} value={countLabel(session.movements.length)} detail={range} />
+      <TextArea aria-label={t.notesOptional} placeholder={t.notesPlaceholder} value={notes} onChange={(e) => setNotes(e.target.value)} />
+      {profile.data?.babyCount === 'twins' && <p className="type-caption-default text-text-secondary">{t.twinsReview}</p>}
       <Button
         block
         onClick={async () => {
@@ -39,7 +43,7 @@ function Review({ session }: { session: MovementSession }) {
           navigate('/movement/history', { replace: true, state: { saved: true } });
         }}
       >
-        Save session
+        {t.saveSession}
       </Button>
       <Button
         block
@@ -50,7 +54,7 @@ function Review({ session }: { session: MovementSession }) {
           navigate('/movement', { replace: true });
         }}
       >
-        Continue session
+        {t.continueSession}
       </Button>
       <MovementNotice />
     </RecordPage>
