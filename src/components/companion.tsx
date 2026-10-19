@@ -1,5 +1,6 @@
 import { fruitImages } from '@/data/fruitImages';
 import type { AccessoryId } from '@/data/types';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import { tr } from '@/i18n';
 import { common } from '@/i18n/common';
 import { cx } from './cx';
@@ -44,6 +45,22 @@ export function FruitCompanion({ week, accessory, size = 164, className }: { wee
           style={{ left: `${(71 / 164) * 100}%`, top: `${(1 / 164) * 100}%`, width: `${(63.36 / 164) * 100}%`, height: `${(42.24 / 164) * 100}%` }}
         />
       )}
+    </div>
+  );
+}
+
+const rand = (min: number, max: number) => min + Math.random() * (max - min);
+
+/**
+ * Idle "floating" wrapper for the fruit baby: each mount starts from a random spot (a small offset that
+ * stays inside the clipped circle), a random point of the drift/tilt cycle and a slightly random speed,
+ * so twins never move in sync. Motion-sensitive users get the still, randomly placed fruit (index.css).
+ */
+export function FloatingFruit({ children, className, style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
+  const [r] = useState(() => ({ x: rand(-8, 8), y: rand(-6, 6), delay: -rand(0, 4.5), duration: rand(3.6, 4.8) }));
+  return (
+    <div className={cx('fruit-float', className)} style={{ ...style, translate: `${r.x}% ${r.y}%`, animationDelay: `${r.delay}s`, animationDuration: `${r.duration}s` }}>
+      {children}
     </div>
   );
 }

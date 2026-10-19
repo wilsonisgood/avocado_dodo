@@ -6,6 +6,6 @@ export { Input, FieldControl, TextArea, LabeledField, PickerField } from './fiel
 export { RecordHeader, RecordMetric, RecordNotice, RecordRow, RecordEmpty, SectionHeader, SettingRow, ReminderOption, RecordPage } from './record';
 export { ConfirmDialog, CompanionDialog, Sheet, NotificationRow } from './overlays';
 export { BottomNavigation } from './navigation';
-export { FruitCompanion, CompanionProgress, MoodChoice, moodMeta, fruitImageForWeek, asset, type MoodKind } from './companion';
+export { FruitCompanion, FloatingFruit, CompanionProgress, MoodChoice, moodMeta, fruitImageForWeek, asset, type MoodKind } from './companion';
 export { MonthCalendar, TimeFields, monthOf, shiftMonth, monthLabel, monthGrid, formatDateLong } from './schedule';
 export { cx } from './cx';

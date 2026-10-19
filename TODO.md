@@ -21,6 +21,10 @@
 `.claude/worktrees/i18n-<模組>`、分支 `i18n/<模組>`：onboarding、home、records、meals、mood、movement、appointments、
 profile、settings、tasks。完成後：合併、`npm run check`、三語截圖抽查、健康文字清單進 LEDGER §翻譯待審。
 
+## 等 i18n/home 合併後（主 session）
+
+- 首頁水果改用共用 `FloatingFruit`：起始位置、動畫節拍、速度每次隨機（使用者 2026-10-19 要求）。
+
 ## 細修清單（主 session，不派任務）
 
 - onboarding 雙胞胎圖示的旋轉方向是目測的，有參考圖（U3）時再對。
