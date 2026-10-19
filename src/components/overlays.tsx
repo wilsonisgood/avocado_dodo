@@ -113,13 +113,16 @@ export function CompanionDialog({
 }
 
 /** Bottom sheet for pickers (09-S5 date, 09-S6 time, 11-S2 reminder time…). */
-export function Sheet({ open, title, onClose, children }: { open: boolean; title: string; onClose: () => void; children: ReactNode }) {
+export function Sheet({ open, title, onClose, trailing, children }: { open: boolean; title: string; onClose: () => void; trailing?: ReactNode; children: ReactNode }) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end">
       <div className="absolute inset-0 bg-bg-scrim opacity-45" onClick={onClose} />
       <div role="dialog" aria-modal="true" aria-label={title} className="relative flex flex-col gap-4 rounded-t-24 bg-bg-surface p-6 pb-8">
-        <h2 className="type-heading-medium text-text-primary">{title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="flex-1 type-heading-medium text-text-primary">{title}</h2>
+          {trailing}
+        </div>
         {children}
       </div>
     </div>

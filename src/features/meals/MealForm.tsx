@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
-import { Button, Chip, ConfirmDialog, CompanionDialog, Input, RecordPage, Sheet, cx } from '@/components';
+import { Button, Chip, ConfirmDialog, CompanionDialog, Input, RecordPage, Sheet, TimeFields, cx } from '@/components';
 import { keys, useAction, useMeal, useRewards } from '@/data/queries';
 import { mealService, today } from '@/data/services';
 import { growthPercent, tasksDone } from '@/data/rules';
@@ -53,6 +53,8 @@ function MealForm({ initial, meal }: { initial: MealDraft; meal?: Meal }) {
   const [draft, setDraft] = useState<MealDraft>(initial);
   const [added, setAdded] = useState<string[]>([]); // photos uploaded in this session (cleaned up on discard)
   const [editing, setEditing] = useState<FoodItem | 'new' | null>(null);
+  /** Meal time being picked in the sheet (null = closed). */
+  const [pickingTime, setPickingTime] = useState<string | null>(null);
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [reward, setReward] = useState<{ id: string; awarded: number } | null>(null);
   const create = useAction(mealService.create, [keys.meals, keys.rewards]);
@@ -94,13 +96,14 @@ function MealForm({ initial, meal }: { initial: MealDraft; meal?: Meal }) {
       </header>
       <p className="type-label-default text-text-primary">{formatDate(draft.date)}</p>
       <div className="flex gap-4">
+        {/* 24-hour time via the shared TimeFields (native <input type=time> shows AM/PM in en locales). */}
         <Input
           label="Meal time"
-          type="time"
+          readOnly
           className="min-w-0 flex-1"
           value={draft.time}
           error={v.errors.time}
-          onChange={(e) => set({ time: e.target.value })}
+          onClick={() => setPickingTime(draft.time || '12:00')}
         />
         <Input label="Logged for" className="min-w-0 flex-1" value={draft.loggedFor} onChange={(e) => set({ loggedFor: e.target.value })} />
       </div>
@@ -135,6 +138,22 @@ function MealForm({ initial, meal }: { initial: MealDraft; meal?: Meal }) {
       <Button block disabled={!v.ok || create.isPending || update.isPending} onClick={save}>
         Save meal
       </Button>
+
+      <Sheet open={pickingTime !== null} title="Meal time" onClose={() => setPickingTime(null)}>
+        {pickingTime !== null && <TimeFields variant="row" value={pickingTime} onChange={setPickingTime} />}
+        <Button
+          block
+          onClick={() => {
+            set({ time: pickingTime! });
+            setPickingTime(null);
+          }}
+        >
+          Confirm time
+        </Button>
+        <Button block variant="outline" onClick={() => setPickingTime(null)}>
+          Cancel
+        </Button>
+      </Sheet>
 
       <FoodSheet
         key={editing === null ? 'closed' : editing === 'new' ? 'new' : editing.id}
@@ -206,10 +225,16 @@ function FoodSheet({
   const [touched, setTouched] = useState(false);
   const err = validateFood(name);
   return (
-    <Sheet open={target !== null} title={existing ? 'Edit food' : 'Add food'} onClose={onClose}>
-      <button type="button" onClick={onClose} className="absolute right-6 top-6 type-body-default text-text-brand">
-        Close
-      </button>
+    <Sheet
+      open={target !== null}
+      title={existing ? 'Edit food' : 'Add food'}
+      onClose={onClose}
+      trailing={
+        <button type="button" onClick={onClose} className="type-body-default text-text-brand">
+          Close
+        </button>
+      }
+    >
       <p className="type-caption-default text-text-secondary">
         {existing ? 'Update this food, then save the meal.' : `Add to ${type.toLowerCase()}. Meal time stays at ${time}.`}
       </p>

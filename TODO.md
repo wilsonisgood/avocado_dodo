@@ -39,8 +39,6 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 
 ## 細修清單（不派任務，主 session 收集起來一次修，AGENT §3b）
 
-- 時間欄位：飲食用原生 `<input type="time">`，會顯示「06:30 PM」，設計稿是「18:30」。改用共用的 `TimeFields`（已在 `src/components/schedule.tsx`）。
-- 共用 Sheet 加 `trailing`（標題列右側），飲食的食物編輯「Close」改放進去。
 - `tools/shot.mjs` 加 `--fill "標籤=值"`：子任務為了打字各自寫了驗證腳本（`.cache/tmp/flow.mjs`、`.cache/m2.mjs`），之後統一用工具。
 - 從 `.fig` 匯出的 SVG 顏色是寫死的淺色值，深色模式下 onboarding 插圖、裝飾向量不會跟著變。要的話改成 inline SVG＋`currentColor`。
 - onboarding 雙胞胎圖示的旋轉方向是子任務目測的，有參考圖（U3）時再對一次。
