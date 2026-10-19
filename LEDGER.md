@@ -25,6 +25,10 @@
 | D-demo | 第一次開啟 → 走 onboarding；`#/playground` 可「載入示範資料」（設計稿上的內容，日期相對今天） | 給看 demo 的人兩種入口：從頭體驗或直接看完整畫面 | |
 | D-modules | 每個模組自己的 `features/<模組>/routes.tsx`；05.Health Record 獨立成 `records` 模組（它彙整飲食、胎動、心情） | 派工時模組之間不會改到同一個檔 | |
 | D-playground | 開發選單頁叫 `#/playground`（原本叫 dev） | 避免和系統的 `/dev` 資料夾混淆 | |
+| D-mood-caption | 心情列表標題：設計稿只給「Happy · Feeling good today」「Tired · Didn't sleep well」兩種副標，其他心情只顯示名稱 | 不自己編另外三種的文案（憲法 4）；要補請給文案 | |
+| D-dialogs | 設計稿的 *-S 整頁 frame（刪除、離開確認）實作成浮在畫面上的對話框 | 設計稿畫的就是「原畫面＋遮罩＋對話框」，用整頁會失去背景脈絡 | |
+| D-unconfirmed | onboarding 選「Not sure yet」仍存使用者填的孕週（設計稿 03-3 有這兩欄），之後在 Profile 可改 | 照 03-3 畫面；首頁才有週數可顯示 | |
+| D-birth | 生日存進 `Profile.birthDate`，年齡不存（由生日算） | 02 有這兩欄；存年齡會過期 | |
 | D-git | 本機 git，`.fig` 原檔一起 commit（19MB）；`design/spec`、`public/assets` 由工具重產，前者不進 git | `.fig` 是唯一真相來源；spec 可隨時 `npm run fig` 重產 | |
 
 **上線前要使用者確認**：設計素材（水果寶寶插圖、圖示）是作者的 UI Kit，公開放上 GitHub Pages 前需要作者同意授權。push 和部署由使用者自己做。
@@ -45,6 +49,8 @@
 | 2026-10-18 | spec 每個畫面 | 1.2–19.8KB，總共 660KB |
 | 2026-10-18 | production build | JS 453KB（gzip 143KB）、CSS 31KB；圖片 2.6MB |
 | 2026-10-18 | 規則單元測試 | 7 項全過 |
+| 2026-10-19 | 第一批 4 個模組（sonnet，平行 worktree） | 實際／預算：onboarding 22/45（含一次修正）、飲食 14/60、胎動 18/55、心情 14/50 ⇒ 平均約 30% |
+| 2026-10-19 | 合併後 main | 30 項測試全過、build 過、各模組截圖 console 0 error、重新整理後資料都還在 |
 
 ## Figma 額度
 

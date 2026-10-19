@@ -19,9 +19,9 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 
 | # | 模組 | frame | 建議 model／預算 | 依賴 | 狀態 |
 |---|---|---|---|---|---|
-| M-1 | onboarding | 01、02、03-1～03-3 | sonnet 45 | — | 🔵 sonnet／45 輪，worktree `.claude/worktrees/onboarding`、分支 `feat/onboarding`；看 `git log` 和回報 |
+| M-1 | onboarding | 01、02、03-1～03-3 | sonnet 45 | — | ✅ 2026-10-19 合併（22/45 輪，含一次修正）|
 | M-2 | meals | 05-0～05-5、05-2a/2b、05-S1/S2、12-R1、12-F1/F2 | sonnet 60 | — | ✅ 2026-10-19 合併（14/60 輪）|
-| M-3 | movement | 08-0～08-7 | sonnet 55 | — | 🔵 sonnet／55 輪，worktree `.claude/worktrees/movement`、分支 `feat/movement`；看 `git log` 和回報 |
+| M-3 | movement | 08-0～08-7 | sonnet 55 | — | ✅ 2026-10-19 合併（18/55 輪）|
 | M-4 | mood | 07-0～07-5、07-S1/S2 | sonnet 50 | — | ✅ 2026-10-19 合併（14/50 輪）|
 | M-5a | appointments 列表／月曆 | 09-0～09-2c、09-E0、09-R* | sonnet 55 | — | ⬜ |
 | M-5b | appointments 新增／編輯／詳情 | 09-3～09-13、09-S* | sonnet 60 | M-5a | ⬜ |
@@ -37,3 +37,6 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 
 - 時間欄位：飲食用原生 `<input type="time">`，會顯示「06:30 PM」，設計稿是「18:30」。等 M-5b 做出時間選擇器（09-S6）後統一換掉。
 - 共用 Sheet 加 `trailing`（標題列右側），飲食的食物編輯「Close」改放進去。
+- `tools/shot.mjs` 加 `--fill "標籤=值"`：子任務為了打字各自寫了驗證腳本（`.cache/tmp/flow.mjs`、`.cache/m2.mjs`），之後統一用工具。
+- 從 `.fig` 匯出的 SVG 顏色是寫死的淺色值，深色模式下 onboarding 插圖、裝飾向量不會跟著變。要的話改成 inline SVG＋`currentColor`。
+- onboarding 雙胞胎圖示的旋轉方向是子任務目測的，有參考圖（U3）時再對一次。
