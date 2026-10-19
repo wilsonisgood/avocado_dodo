@@ -2,6 +2,7 @@
 //   node tools/shot.mjs [--demo] [--dark] [--full] [--reload] [--click "Text"]... <route> [<route>...]
 //   --reload: after the clicks, reload the page before the shot (proves data was persisted)
 //   --click "switch:Lunch" clicks the Toggle named Lunch (switches have no visible text)
+//   --lang zh-Hant|zh-Hans|en: pick the app language first (shots get a .zh-Hant suffix)
 //   e.g. node tools/shot.mjs --demo --full home tasks meals/new
 // Routes are app hash routes (#/home), written without a leading slash; "playground" is the in-app dev menu.
 // Starts its own Vite dev server, opens each route at 420×896 in Playwright's Chromium kept inside the
@@ -18,9 +19,11 @@ const { chromium } = await import('playwright-core');
 const args = process.argv.slice(2);
 const flag = (f) => args.includes(f);
 const clicks = [];
+let lang = null;
 const routes = [];
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--click') clicks.push(args[++i]);
+  else if (args[i] === '--lang') lang = args[++i];
   else if (!args[i].startsWith('--')) routes.push(args[i].replace(/^\/+/, ''));
 }
 if (!routes.length) routes.push('');
@@ -50,6 +53,13 @@ if (flag('--demo')) {
   await page.getByRole('button', { name: 'Load demo data' }).click();
   await page.waitForURL(/#\/home/);
 }
+if (lang) {
+  // The playground lists the LanguagePicker; its options are named in their own language.
+  const names = { en: 'English', 'zh-Hant': '繁體中文', 'zh-Hans': '简体中文' };
+  await page.goto(`${base}#/playground`);
+  await page.getByRole('button', { name: names[lang], exact: true }).first().click();
+  await page.waitForTimeout(300);
+}
 
 fs.mkdirSync(path.join(root, 'shots'), { recursive: true });
 for (const route of routes) {
@@ -78,7 +88,7 @@ for (const route of routes) {
     if (extra > 0) await page.setViewportSize({ width: 420, height: 896 + extra });
     await page.waitForTimeout(200);
   }
-  const name = (route.replace(/[/?=&]+/g, '_') || 'root') + (flag('--reload') ? '.reloaded' : '') + (flag('--dark') ? '.dark' : '') + '.png';
+  const name = (route.replace(/[/?=&]+/g, '_') || 'root') + (flag('--reload') ? '.reloaded' : '') + (flag('--dark') ? '.dark' : '') + (lang ? `.${lang}` : '') + '.png';
   const file = path.join(root, 'shots', name);
   await page.screenshot({ path: file });
   const text = (await page.locator('#phone-screen').innerText()).replace(/\s+/g, ' ').slice(0, 160);
