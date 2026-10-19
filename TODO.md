@@ -28,7 +28,7 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 | M-6 | records（05.Health Record 彙整頁） | 05.Health Record | sonnet 40 | M-2、M-3、M-4 | ✅ 2026-10-19 合併（11/18 輪）|
 | M-7 | profile | 07.Personal、10-* | sonnet 60 | — | ✅ 2026-10-19 合併（21/26 輪）|
 | M-8 | settings | 11-* | sonnet 55 | — | 🔵 sonnet／24 輪，worktree `.claude/worktrees/settings`、分支 `feat/settings` |
-| M-9 | tasks／shop | 06.Task、12-*（51 個 frame，多數是點數狀態） | opus 70 | M-2、M-4 | 🔵 opus／30 輪，worktree `.claude/worktrees/tasks`、分支 `feat/tasks` |
+| M-9 | tasks／shop | 06.Task、12-*（51 個 frame，多數是點數狀態） | opus 70 | M-2、M-4 | ✅ 2026-10-19 合併（24/30 輪，opus）|
 | M-10 | home | 04.Main Page | sonnet 45 | —（只透過資料層與路由約定） | ✅ 2026-10-19 合併（16/22輪）|
 
 每日簽到：每天第一次打開分頁時自動 +5（`app/layouts.tsx`，LEDGER D-checkin）。
