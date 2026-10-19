@@ -41,6 +41,7 @@
 | D-a11y | 共用 `LabeledField` 改成 `<label>` 包住欄位 | 原本標籤跟欄位沒關聯，讀螢幕軟體讀不到；e2e 測試抓到的 | |
 | D-pages-ci | 準備好 GitHub Actions 部署設定（`.github/workflows/deploy.yml`），build 後發布 `dist/` | 使用者要放 GitHub Pages；push 與開啟 Pages 由使用者做 | |
 | D-dark-svg | 設計稿向量另產深色版（`vectors-dark/`、`accessories-dark/`），`asset()` 依主題換路徑，切換主題時重新掛載畫面 | `<img>` 載入的 SVG 讀不到 CSS 變數；這樣不用改任何模組 | |
+| D-up | 返回鍵改成「回到最近的上一層」（分頁、路徑上層、或指定的上層），全 App 共用 `src/app/nav.tsx`；原本 6 份複製的「上一頁」邏輯和 9 處寫死的返回都換掉 | 使用者錄影：胎動、飲食、心情在列表和詳情間死循環；e2e 加了三條回歸測試 | |
 | D-git | 本機 git，`.fig` 原檔一起 commit（19MB）；`design/spec`、`public/assets` 由工具重產，前者不進 git | `.fig` 是唯一真相來源；spec 可隨時 `npm run fig` 重產 | |
 
 **上線前要使用者確認**：設計素材（水果寶寶插圖、圖示）是作者的 UI Kit，公開放上 GitHub Pages 前需要作者同意授權。push 和部署由使用者自己做。

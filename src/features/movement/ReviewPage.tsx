@@ -28,7 +28,7 @@ function Review({ session }: { session: MovementSession }) {
 
   return (
     <RecordPage>
-      <RecordHeader title="Session summary" onBack={() => navigate('/movement')} />
+      <RecordHeader title="Session summary" fallback="/movement" />
       <RecordMetric label="Movements this session" value={countLabel(session.movements.length)} detail={range} />
       <TextArea aria-label="Notes (optional)" placeholder="Notes (optional) e.g. Felt movement while resting. Location uncertain." value={notes} onChange={(e) => setNotes(e.target.value)} />
       {profile.data?.babyCount === 'twins' && <p className="type-caption-default text-text-secondary">Twins: This is an overall observation, not a separate assessment of each baby.</p>}

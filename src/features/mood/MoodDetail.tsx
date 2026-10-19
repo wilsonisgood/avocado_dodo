@@ -15,12 +15,12 @@ export function MoodDetail() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const remove = useAction(moodService.remove, [keys.moods]);
 
-  if (isLoading) return <RecordPage><RecordHeader title="Mood journal" onBack={() => navigate('/mood')} /></RecordPage>;
+  if (isLoading) return <RecordPage><RecordHeader title="Mood journal" fallback="/mood" /></RecordPage>;
   if (!entry) return <MissingEntry />;
 
   return (
     <RecordPage>
-      <RecordHeader title="Mood journal" onBack={() => navigate('/mood')} />
+      <RecordHeader title="Mood journal" fallback="/mood" />
       {saved && <p className="type-label-default text-text-brand">Saved. Thank you for caring for yourself.</p>}
       <RecordRow title={moodMeta[entry.mood].label} detail={formatDateTime(entry.at)} />
       <TextArea value={entry.note} readOnly aria-label="Note" />

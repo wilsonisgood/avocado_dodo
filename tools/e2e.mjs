@@ -110,6 +110,54 @@ await step('reload keeps profile, points, meals and the bow', async () => {
   await expectText('Doris');
 });
 
+// ---- back navigation never loops (2026-10-19 video: list ⇄ detail forever) ------------------------
+const back = () => page.getByRole('button', { name: 'Back', exact: true }).first().click();
+const backUntil = async (re, max = 5) => {
+  for (let i = 0; i < max && !re.test(page.url()); i++) {
+    await back();
+    await page.waitForTimeout(200);
+  }
+  if (!re.test(page.url())) throw new Error(`stuck at ${page.url().split('#')[1]}`);
+};
+const backUntilHome = (max) => backUntil(/#\/home$/, max);
+
+await step('mood: records → history → add → save → back to journal → back reaches records', async () => {
+  await go('home');
+  await page.getByRole('link', { name: 'Records' }).click();
+  await click('View mood history');
+  await page.getByRole('button', { name: /^(Add mood|Log your first mood)$/ }).first().click();
+  await page.getByText('Calm', { exact: true }).first().click();
+  await click('Save mood');
+  await page.waitForURL(/#\/mood\/[\w-]+$/);
+  await click('Back to mood journal');
+  await page.waitForURL(/#\/mood$/);
+  await backUntil(/#\/records$/, 2);
+});
+
+await step('movement: start → log → finish → save → back reaches home', async () => {
+  await go('home');
+  await page.getByRole('link', { name: 'Start' }).or(page.getByRole('button', { name: 'Start', exact: true })).first().click();
+  await page.waitForURL(/#\/movement$/);
+  await click('Start a session');
+  await click('Movement ＋1');
+  await click('Finish & review');
+  await click('Save session');
+  await page.waitForURL(/movement\/history/);
+  await backUntilHome(3);
+});
+
+await step('food diary: lunch → add food → save → reward → detail → back reaches home', async () => {
+  await go('home');
+  await page.getByRole('link', { name: 'Snack' }).or(page.getByRole('button', { name: 'Snack', exact: true })).first().click();
+  await page.waitForURL(/meals\/new/);
+  await click('＋ Add food');
+  await page.getByLabel('Food name').fill('Yogurt');
+  await click('Add to meal');
+  await click('Save meal');
+  await page.waitForURL(/#\/meals\/[\w-]+$/);
+  await backUntilHome(3);
+});
+
 await browser.close();
 await server.close();
 fs.rmSync(profileDir, { recursive: true, force: true });

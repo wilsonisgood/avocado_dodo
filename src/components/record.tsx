@@ -1,16 +1,16 @@
 import type { ReactNode } from 'react';
-import { useNavigate } from 'react-router';
+import { useUp } from '@/app/nav';
 import { Icon, type IconName } from './Icon';
 import { cx } from './cx';
 
 // "Nestly 紀錄流程共用元件": the building blocks of the record / settings / appointment flows.
 
-/** Nestly/RecordHeader: 60px surface bar, back icon + Heading/Medium title. `onBack` defaults to history back. */
-export function RecordHeader({ title, onBack, trailing }: { title: string; onBack?: () => void; trailing?: ReactNode }) {
-  const navigate = useNavigate();
+/** Nestly/RecordHeader: 60px surface bar, back icon + Heading/Medium title. `onBack` defaults to shared up-navigation (src/app/nav.tsx). */
+export function RecordHeader({ title, onBack, fallback, trailing }: { title: string; onBack?: () => void; fallback?: string; trailing?: ReactNode }) {
+  const up = useUp(fallback);
   return (
     <header className="flex h-15 shrink-0 items-center gap-2 rounded-16 bg-bg-surface p-4">
-      <button type="button" aria-label="Back" onClick={onBack ?? (() => navigate(-1))} className="-m-1 p-1 text-icon-default">
+      <button type="button" aria-label="Back" onClick={onBack ?? up} className="-m-1 p-1 text-icon-default">
         <Icon name="Back" />
       </button>
       <h1 className="min-w-0 flex-1 truncate type-heading-medium text-text-primary">{title}</h1>

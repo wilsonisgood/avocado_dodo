@@ -1,3 +1,4 @@
+import { useUp } from '@/app/nav';
 import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { Button, ConfirmDialog, RecordPage } from '@/components';
@@ -17,6 +18,7 @@ const BANNERS: Record<string, string> = {
 export function MealDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const up = useUp('/records');
   const banner = (useLocation().state as { banner?: string } | null)?.banner;
   const { data: meal, isLoading } = useMeal(id);
   const remove = useAction(mealService.remove, [keys.meals]);
@@ -28,7 +30,7 @@ export function MealDetail() {
   return (
     <RecordPage className="gap-4 pb-8">
       <header className="flex items-center gap-3">
-        <button type="button" aria-label="Back" onClick={() => navigate('/records')} className="type-heading-large text-text-brand">
+        <button type="button" aria-label="Back" onClick={up} className="type-heading-large text-text-brand">
           ‹
         </button>
         <h1 className="type-heading-medium text-text-primary">Meal details</h1>
@@ -74,6 +76,7 @@ export function MealDetail() {
 export function MealEstimate() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const up = useUp('/records'); // /meals/:id is the ancestor when we came from it
   const { data: meal, isLoading } = useMeal(id);
   const update = useAction(mealService.update, [keys.meals]);
   if (isLoading) return <RecordPage>{null}</RecordPage>;
@@ -87,7 +90,7 @@ export function MealEstimate() {
   return (
     <RecordPage className="gap-4 pb-8">
       <header className="flex items-center gap-3">
-        <button type="button" aria-label="Back" onClick={() => navigate(`/meals/${meal.id}`, { replace: true })} className="type-heading-large text-text-brand">
+        <button type="button" aria-label="Back" onClick={up} className="type-heading-large text-text-brand">
           ‹
         </button>
         <h1 className="type-heading-medium text-text-primary">Review nutrition estimate</h1>

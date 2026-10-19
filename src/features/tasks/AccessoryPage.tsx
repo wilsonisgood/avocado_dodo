@@ -40,7 +40,7 @@ export function AccessoryPage() {
 
   return (
     <RecordPage className="gap-3">
-      <RecordHeader title="Accessory details" onBack={() => navigate('/shop')} />
+      <RecordHeader title="Accessory details" fallback="/shop" />
       <p className="type-heading-small text-text-brand">Balance: {bp(r.balance)}</p>
       <CompanionStage accessory={id} />
       <p className="type-caption-strong text-text-secondary">{d.preview}</p>

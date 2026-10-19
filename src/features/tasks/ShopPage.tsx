@@ -55,7 +55,7 @@ export function ShopPage() {
 
   return (
     <RecordPage className="gap-3">
-      <RecordHeader title="Baby shop" onBack={() => navigate('/tasks')} />
+      <RecordHeader title="Baby shop" fallback="/tasks" />
       <p className="type-heading-small text-text-brand">Balance: {bp(r.balance)}</p>
       <CompanionStage accessory={r.equipped} />
       <SegmentedTabs

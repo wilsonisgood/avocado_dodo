@@ -1,11 +1,2 @@
-import { useNavigate } from 'react-router';
-
-/** Back: previous page when the router has one, otherwise `fallback`. */
-export function useLeave(fallback: string) {
-  const navigate = useNavigate();
-  return () => {
-    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0;
-    if (idx > 0) navigate(-1);
-    else navigate(fallback, { replace: true });
-  };
-}
+// Up navigation is shared app-wide (src/app/nav.tsx): plain history-back looped between list and detail.
+export { useUp as useLeave } from '@/app/nav';

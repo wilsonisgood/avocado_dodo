@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+import { useUp } from '@/app/nav';
 import { RecordNotice } from '@/components';
 
 /** Safety notice, copied verbatim from the design (frames 08-0…08-7). */
@@ -10,11 +10,5 @@ export function MovementNotice() {
   );
 }
 
-/** Back to the previous page, or /records when there is none (opened directly). */
-export function useBack() {
-  const navigate = useNavigate();
-  return () => {
-    if ((window.history.state?.idx ?? 0) > 0) navigate(-1);
-    else navigate('/records', { replace: true });
-  };
-}
+/** Up to the screen this flow was opened from (shared rule, src/app/nav.tsx); /records when opened directly. */
+export const useBack = () => useUp('/records');

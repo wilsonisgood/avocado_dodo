@@ -38,3 +38,5 @@
    會解析到主專案（真實路徑），結果截圖和 Vite 都跑在主專案上。臨時腳本放 worktree 自己的 `.tmp/`。
 6. **`<img>` 載入的 SVG 讀不到頁面的 CSS 變數**：設計稿向量的顏色是寫死的。深色模式靠 assets.mjs 另產
    `vectors-dark/`、`accessories-dark/`，`asset()` 依主題換路徑，主題變了整個 router 重新掛載。⛔ 在 SVG 裡寫 `var(--…)`。
+7. **返回鍵 ⛔ 用 `navigate(-1)` 或寫死 `navigate('/上一頁')`**：兩者疊在一起會在列表和詳情之間來回彈（2026-10-19 使用者錄影：
+   胎動、飲食、心情都卡住）。一律用 `RecordHeader` 的預設返回或 `useUp(fallback)`（`src/app/nav.tsx`：退到最近的上一層）。

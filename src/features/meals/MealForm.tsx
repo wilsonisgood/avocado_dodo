@@ -1,3 +1,4 @@
+import { useUp } from '@/app/nav';
 import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { Button, Chip, ConfirmDialog, CompanionDialog, Input, RecordPage, Sheet, TimeFields, cx } from '@/components';
@@ -8,8 +9,6 @@ import type { FoodItem, Meal } from '@/data/types';
 import { MEAL_TYPES, formatDate, isDirty, parseMealType, typeLabel, validateFood, validateMeal, type MealDraft } from './logic';
 import { FoodList, PhotoRow } from './parts';
 
-const goBack = (navigate: ReturnType<typeof useNavigate>) =>
-  window.history.state?.idx > 0 ? navigate(-1) : navigate('/records', { replace: true });
 const nowTime = () => new Date().toTimeString().slice(0, 5);
 
 /** meals/new */
@@ -56,6 +55,7 @@ function MealForm({ initial, meal }: { initial: MealDraft; meal?: Meal }) {
   /** Meal time being picked in the sheet (null = closed). */
   const [pickingTime, setPickingTime] = useState<string | null>(null);
   const [confirmLeave, setConfirmLeave] = useState(false);
+  const up = useUp('/records');
   const [reward, setReward] = useState<{ id: string; awarded: number } | null>(null);
   const create = useAction(mealService.create, [keys.meals, keys.rewards]);
   const update = useAction(mealService.update, [keys.meals]);
@@ -66,10 +66,10 @@ function MealForm({ initial, meal }: { initial: MealDraft; meal?: Meal }) {
   const dirty = isDirty(draft, initial);
   const set = (p: Partial<MealDraft>) => setDraft((d) => ({ ...d, ...p }));
 
-  const leave = () => (dirty ? setConfirmLeave(true) : goBack(navigate));
+  const leave = () => (dirty ? setConfirmLeave(true) : up());
   const discard = async () => {
     await Promise.all(added.map((p) => mealService.removePhoto(p)));
-    goBack(navigate);
+    up();
   };
   const save = async () => {
     if (!v.ok) return;

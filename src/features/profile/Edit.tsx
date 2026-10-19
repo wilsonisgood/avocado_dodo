@@ -1,3 +1,4 @@
+import { useUp } from '@/app/nav';
 import { Button, Chip, FieldControl, Input, LabeledField, MonthCalendar, PickerField, RecordEmpty, RecordHeader, RecordPage, RecordRow, SegmentedTabs, SettingRow, formatDateLong } from '@/components';
 import { keys, useAction, useProfile } from '@/data/queries';
 import { pregnancyAge } from '@/data/rules';
@@ -10,15 +11,8 @@ import {
   pregnancyToForm, pregnancyToPatch, pregnancyValid, profileDue, type BodyForm, type PregnancyForm, type WeekSource,
 } from './logic';
 
-/** Back: previous page when the router has one, otherwise `fallback` (METHOD: no previous page → /profile). */
-function useLeave(fallback: string) {
-  const navigate = useNavigate();
-  return () => {
-    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0;
-    if (idx > 0) navigate(-1);
-    else navigate(fallback, { replace: true });
-  };
-}
+/** Up navigation shared app-wide (src/app/nav.tsx). */
+const useLeave = useUp;
 
 /** Wait for the profile; edit pages never render without one. */
 function WithProfile({ title, children }: { title: string; children: (p: Profile) => ReactNode }) {
@@ -71,7 +65,7 @@ function Overview({ p }: { p: Profile }) {
   const t = today();
   return (
     <RecordPage className="gap-4">
-      <RecordHeader title="Profile & pregnancy" onBack={() => navigate('/profile')} />
+      <RecordHeader title="Profile & pregnancy" fallback="/profile" />
       <RecordRow title={p.nickname} detail={`${babyLabel(p.babyCount)} · ${ageLabel(pregnancyAge(p.pregnancy, t))}`} />
       <SettingRow icon="Profile" title="Personal details" detail="Nickname and preferred name" onClick={() => navigate('/profile/personal')} />
       <SettingRow icon="Calendar" title="Pregnancy details" detail="Due date, week and pregnancy type" onClick={() => navigate('/profile/pregnancy')} />
@@ -268,7 +262,7 @@ function SavedView({ p }: { p: Profile }) {
   const source = p.pregnancy?.kind === 'manual' ? 'Weeks set manually' : age;
   return (
     <RecordPage className="gap-4">
-      <RecordHeader title={twins ? 'Pregnancy details updated' : 'Profile updated'} onBack={() => navigate('/profile/edit')} />
+      <RecordHeader title={twins ? 'Pregnancy details updated' : 'Profile updated'} fallback="/profile/edit" />
       <p className="type-label-default text-text-brand">Changes saved</p>
       {twins ? (
         <RecordRow title={`Twins · ${age}`} detail={`${dueText} · ${source}`} />

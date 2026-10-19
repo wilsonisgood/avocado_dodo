@@ -1,3 +1,4 @@
+import { useUp } from '@/app/nav';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { Button, MonthCalendar, RecordEmpty, RecordHeader, RecordPage, SegmentedTabs, monthOf } from '@/components';
@@ -46,11 +47,7 @@ export function AppointmentsPage() {
         setPicked(null);
         setMonth(null);
     };
-    const leave = () => {
-        const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0;
-        if (idx > 0) navigate(-1);
-        else navigate('/home', { replace: true });
-    };
+    const leave = useUp('/home');
     const open = (a: Appointment) => navigate(`/appointments/${a.id}`);
     const add = (date?: ISODate) => navigate(date ? `/appointments/new?date=${date}` : '/appointments/new');
 

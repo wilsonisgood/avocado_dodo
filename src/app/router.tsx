@@ -1,6 +1,7 @@
 import { createHashRouter } from 'react-router';
 import type { ModuleRoutes } from './moduleRoutes';
 import { StackLayout, StartRedirect, TabLayout } from './layouts';
+import { NavRoot } from './nav';
 import { DevPage } from './DevPage';
 import { routes as onboarding } from '@/features/onboarding/routes';
 import { routes as home } from '@/features/home/routes';
@@ -18,8 +19,14 @@ const modules: ModuleRoutes[] = [onboarding, home, records, meals, mood, movemen
 
 // Hash routing: GitHub Pages has no SPA fallback, so deep links must live after the "#" (LEDGER D-pages).
 export const router = createHashRouter([
-  { index: true, element: <StartRedirect /> },
-  { element: <TabLayout />, children: modules.flatMap((m) => m.tab) },
-  { element: <StackLayout />, children: [...modules.flatMap((m) => m.stack), { path: 'playground', element: <DevPage /> }] },
-  { path: '*', element: <StartRedirect /> },
+  {
+    // NavRoot records the history path for shared up-navigation (src/app/nav.tsx).
+    element: <NavRoot />,
+    children: [
+      { index: true, element: <StartRedirect /> },
+      { element: <TabLayout />, children: modules.flatMap((m) => m.tab) },
+      { element: <StackLayout />, children: [...modules.flatMap((m) => m.stack), { path: 'playground', element: <DevPage /> }] },
+      { path: '*', element: <StartRedirect /> },
+    ],
+  },
 ]);

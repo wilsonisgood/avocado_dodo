@@ -21,7 +21,7 @@ export function HistoryPage() {
   let lastDay = '';
   return (
     <RecordPage>
-      <RecordHeader title="Movement log" onBack={() => navigate('/movement', { replace: true })} />
+      <RecordHeader title="Movement log" fallback="/movement" />
       {list.isLoading ? null : sessions.length === 0 ? (
         <RecordEmpty title="No movement logs yet">Start an observation and note how it felt.</RecordEmpty>
       ) : (
