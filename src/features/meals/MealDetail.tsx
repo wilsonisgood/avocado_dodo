@@ -4,18 +4,18 @@ import { useLocation, useNavigate, useParams } from 'react-router';
 import { Button, ConfirmDialog, RecordPage } from '@/components';
 import { keys, useAction, useMeal } from '@/data/queries';
 import { mealService } from '@/data/services';
+import { useT } from '@/i18n';
+import { common } from '@/i18n/common';
+import { messages } from './i18n';
 import { estimateNutrition, formatDate, typeLabel } from './logic';
 import { MissingMeal } from './MealForm';
 import { Banner, FoodList, PhotoRow, TextLink } from './parts';
 
-const BANNERS: Record<string, string> = {
-  saved: "Saved to today's meal log",
-  updated: "Meal updated · Today's points already claimed",
-  estimated: 'Nutrition estimate saved',
-};
-
 /** meals/:id (05-3 / 05-5 / 12-F2) */
 export function MealDetail() {
+  const t = useT(messages);
+  const c = useT(common);
+  const BANNERS: Record<string, string> = { saved: t.bannerSaved, updated: t.bannerUpdated, estimated: t.bannerEstimated };
   const { id } = useParams();
   const navigate = useNavigate();
   const up = useUp('/records');
@@ -30,10 +30,10 @@ export function MealDetail() {
   return (
     <RecordPage className="gap-4 pb-8">
       <header className="flex items-center gap-3">
-        <button type="button" aria-label="Back" onClick={up} className="type-heading-large text-text-brand">
+        <button type="button" aria-label={c.back} onClick={up} className="type-heading-large text-text-brand">
           ‹
         </button>
-        <h1 className="type-heading-medium text-text-primary">Meal details</h1>
+        <h1 className="type-heading-medium text-text-primary">{t.mealDetails}</h1>
       </header>
       {banner && BANNERS[banner] && <Banner>{BANNERS[banner]}</Banner>}
       <h2 className="type-heading-large text-text-primary">{typeLabel(meal.type)}</h2>
@@ -43,25 +43,25 @@ export function MealDetail() {
       <PhotoRow photoIds={meal.photoIds} />
       <FoodList foods={meal.foods} />
       <div className="flex flex-col gap-3 rounded-14 border border-border-default bg-bg-surface p-4">
-        <p className="type-heading-small text-text-primary">{n ? 'Nutrition for this meal' : 'Nutrition not estimated yet'}</p>
+        <p className="type-heading-small text-text-primary">{n ? t.nutritionFor : t.nutritionNot}</p>
         <p className="type-body-default text-text-secondary">
-          {n ? `${n.kcal} kcal · Protein ${n.proteinG} g · Carbs ${n.carbsG} g` : 'Keep this entry and review nutrition later.'}
+          {n ? t.nutritionLine(n.kcal, n.proteinG, n.carbsG) : t.reviewLater}
         </p>
       </div>
       <Button block variant="soft" onClick={() => navigate(`/meals/${meal.id}/estimate`)}>
-        {n ? 'Estimate again' : 'Estimate with AI'}
+        {n ? t.estimateAgain : t.estimateAI}
       </Button>
       <Button block variant="outline" onClick={() => navigate(`/meals/${meal.id}/edit`)}>
-        Edit meal
+        {t.editMealBtn}
       </Button>
-      <TextLink onClick={() => setConfirmDelete(true)}>Delete meal</TextLink>
+      <TextLink onClick={() => setConfirmDelete(true)}>{t.deleteMeal}</TextLink>
       <ConfirmDialog
         open={confirmDelete}
         danger
-        title="Delete this meal?"
-        message="This cannot be undone."
-        confirmLabel="Keep entry"
-        cancelLabel="Delete"
+        title={t.deleteTitle}
+        message={t.cannotUndo}
+        confirmLabel={t.keepEntry}
+        cancelLabel={t.delete}
         onConfirm={() => setConfirmDelete(false)}
         onCancel={async () => {
           await remove.mutateAsync([meal.id]);
@@ -74,6 +74,8 @@ export function MealDetail() {
 
 /** meals/:id/estimate (05-4): sample estimate, not medical advice. */
 export function MealEstimate() {
+  const t = useT(messages);
+  const c = useT(common);
   const { id } = useParams();
   const navigate = useNavigate();
   const up = useUp('/records'); // /meals/:id is the ancestor when we came from it
@@ -83,22 +85,22 @@ export function MealEstimate() {
   if (!meal) return <MissingMeal />;
   const est = estimateNutrition(meal.foods);
   const rows: [string, string][] = [
-    ['Energy', `${est.kcal} kcal`],
-    ['Protein', `${est.proteinG} g`],
-    ['Carbs', `${est.carbsG} g`],
+    [t.energy, t.nutritionKcal(est.kcal)],
+    [t.protein, t.nutritionG(est.proteinG)],
+    [t.carbs, t.nutritionG(est.carbsG)],
   ];
   return (
     <RecordPage className="gap-4 pb-8">
       <header className="flex items-center gap-3">
-        <button type="button" aria-label="Back" onClick={up} className="type-heading-large text-text-brand">
+        <button type="button" aria-label={c.back} onClick={up} className="type-heading-large text-text-brand">
           ‹
         </button>
-        <h1 className="type-heading-medium text-text-primary">Review nutrition estimate</h1>
+        <h1 className="type-heading-medium text-text-primary">{t.reviewEstimate}</h1>
       </header>
       <p className="type-heading-small text-text-primary">
-        {typeLabel(meal.type)} · {meal.foods.length} foods
+        {t.typeFoods(typeLabel(meal.type), meal.foods.length)}
       </p>
-      <p className="-mt-2 type-body-default text-text-secondary">Sample estimates. Check food names and portions.</p>
+      <p className="-mt-2 type-body-default text-text-secondary">{t.sampleEstimates}</p>
       <div className="flex flex-col gap-3 rounded-16 bg-bg-soft p-5">
         {rows.map(([k, val]) => (
           <div key={k} className="flex justify-between gap-3">
@@ -108,9 +110,9 @@ export function MealEstimate() {
         ))}
       </div>
       <FoodList foods={meal.foods} />
-      <p className="type-caption-default text-text-secondary">Estimates may vary. Edit portions and estimate again, or save the food log only.</p>
+      <p className="type-caption-default text-text-secondary">{t.estimatesVary}</p>
       <Button block variant="outline" onClick={() => navigate(`/meals/${meal.id}/edit`)}>
-        Edit foods & portions
+        {t.editFoodsPortions}
       </Button>
       <Button
         block
@@ -119,9 +121,9 @@ export function MealEstimate() {
           navigate(`/meals/${meal.id}`, { replace: true, state: { banner: 'estimated' } });
         }}
       >
-        Confirm & save estimate
+        {t.confirmSave}
       </Button>
-      <TextLink onClick={() => navigate(`/meals/${meal.id}`, { replace: true })}>Skip estimate</TextLink>
+      <TextLink onClick={() => navigate(`/meals/${meal.id}`, { replace: true })}>{t.skipEstimate}</TextLink>
     </RecordPage>
   );
 }

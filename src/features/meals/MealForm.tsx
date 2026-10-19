@@ -5,20 +5,24 @@ import { Button, Chip, ConfirmDialog, CompanionDialog, Input, RecordPage, Sheet,
 import { keys, useAction, useMeal, useRewards } from '@/data/queries';
 import { mealService, today } from '@/data/services';
 import { growthPercent, tasksDone } from '@/data/rules';
+import { useT } from '@/i18n';
+import { common } from '@/i18n/common';
 import type { FoodItem, Meal } from '@/data/types';
-import { MEAL_TYPES, formatDate, isDirty, parseMealType, typeLabel, validateFood, validateMeal, type MealDraft } from './logic';
+import { messages } from './i18n';
+import { formatDate, mealTypes, isDirty, parseMealType, typeLabel, validateFood, validateMeal, type MealDraft } from './logic';
 import { FoodList, PhotoRow } from './parts';
 
 const nowTime = () => new Date().toTimeString().slice(0, 5);
 
 /** meals/new */
 export function NewMeal() {
+  const t = useT(messages);
   const [q] = useSearchParams();
   const initial: MealDraft = {
     date: /^\d{4}-\d{2}-\d{2}$/.test(q.get('date') ?? '') ? q.get('date')! : today(),
     time: nowTime(),
     type: parseMealType(q.get('type')) ?? 'breakfast',
-    loggedFor: 'Me',
+    loggedFor: t.loggedForMe,
     photoIds: [],
     foods: [],
   };
@@ -36,11 +40,12 @@ export function EditMeal() {
 }
 
 export function MissingMeal() {
+  const t = useT(messages);
   const navigate = useNavigate();
   return (
     <RecordPage>
-      <p className="type-body-default text-text-secondary">This meal was not found.</p>
-      <Button onClick={() => navigate('/records', { replace: true })}>Back to records</Button>
+      <p className="type-body-default text-text-secondary">{t.notFound}</p>
+      <Button onClick={() => navigate('/records', { replace: true })}>{t.backToRecords}</Button>
     </RecordPage>
   );
 }
@@ -48,6 +53,8 @@ export function MissingMeal() {
 const newId = () => globalThis.crypto?.randomUUID?.() ?? `f${Date.now()}${Math.random().toString(36).slice(2)}`;
 
 function MealForm({ initial, meal }: { initial: MealDraft; meal?: Meal }) {
+  const t = useT(messages);
+  const c = useT(common);
   const navigate = useNavigate();
   const [draft, setDraft] = useState<MealDraft>(initial);
   const [added, setAdded] = useState<string[]>([]); // photos uploaded in this session (cleaned up on discard)
@@ -89,32 +96,32 @@ function MealForm({ initial, meal }: { initial: MealDraft; meal?: Meal }) {
   return (
     <RecordPage className="gap-4 pb-8">
       <header className="flex items-center gap-3">
-        <button type="button" aria-label="Back" onClick={leave} className="type-heading-large text-text-brand">
+        <button type="button" aria-label={c.back} onClick={leave} className="type-heading-large text-text-brand">
           ‹
         </button>
-        <h1 className="type-heading-medium text-text-primary">{meal ? 'Edit meal' : 'Add meal'}</h1>
+        <h1 className="type-heading-medium text-text-primary">{meal ? t.editMeal : t.addMeal}</h1>
       </header>
       <p className="type-label-default text-text-primary">{formatDate(draft.date)}</p>
       <div className="flex gap-4">
         {/* 24-hour time via the shared TimeFields (native <input type=time> shows AM/PM in en locales). */}
         <Input
-          label="Meal time"
+          label={t.mealTime}
           readOnly
           className="min-w-0 flex-1"
           value={draft.time}
           error={v.errors.time}
           onClick={() => setPickingTime(draft.time || '12:00')}
         />
-        <Input label="Logged for" className="min-w-0 flex-1" value={draft.loggedFor} onChange={(e) => set({ loggedFor: e.target.value })} />
+        <Input label={t.loggedFor} className="min-w-0 flex-1" value={draft.loggedFor} onChange={(e) => set({ loggedFor: e.target.value })} />
       </div>
       <div className="flex gap-2">
-        {MEAL_TYPES.map((t) => (
-          <Chip key={t.type} selected={draft.type === t.type} onClick={() => set({ type: t.type })}>
-            {t.label}
+        {mealTypes().map((m) => (
+          <Chip key={m.type} selected={draft.type === m.type} onClick={() => set({ type: m.type })}>
+            {m.label}
           </Chip>
         ))}
       </div>
-      {draft.photoIds.length === 0 && <p className="type-caption-default text-text-secondary">A photo is optional. A text entry is enough.</p>}
+      {draft.photoIds.length === 0 && <p className="type-caption-default text-text-secondary">{t.photoOptional}</p>}
       <PhotoRow
         photoIds={draft.photoIds}
         onAdd={async (file) => {
@@ -125,21 +132,21 @@ function MealForm({ initial, meal }: { initial: MealDraft; meal?: Meal }) {
       />
       {draft.foods.length === 0 ? (
         <div className="flex flex-col gap-3 rounded-14 border border-border-default bg-bg-surface p-6">
-          <p className="type-heading-small text-text-primary">No food added yet</p>
+          <p className="type-heading-small text-text-primary">{t.noFoodYet}</p>
           <p className="type-body-default text-text-secondary">{v.errors.foods}</p>
         </div>
       ) : (
         <FoodList foods={draft.foods} onSelect={setEditing} />
       )}
       <Button block variant="outline" onClick={() => setEditing('new')}>
-        ＋ Add food
+        {t.addFood}
       </Button>
-      <p className="type-caption-default text-text-secondary">Tap a food to edit its name, portion or remove it.</p>
+      <p className="type-caption-default text-text-secondary">{t.tapFoodHint}</p>
       <Button block disabled={!v.ok || create.isPending || update.isPending} onClick={save}>
-        Save meal
+        {t.saveMeal}
       </Button>
 
-      <Sheet open={pickingTime !== null} title="Meal time" onClose={() => setPickingTime(null)}>
+      <Sheet open={pickingTime !== null} title={t.mealTime} onClose={() => setPickingTime(null)}>
         {pickingTime !== null && <TimeFields variant="row" value={pickingTime} onChange={setPickingTime} />}
         <Button
           block
@@ -148,10 +155,10 @@ function MealForm({ initial, meal }: { initial: MealDraft; meal?: Meal }) {
             setPickingTime(null);
           }}
         >
-          Confirm time
+          {t.confirmTime}
         </Button>
         <Button block variant="outline" onClick={() => setPickingTime(null)}>
-          Cancel
+          {t.cancel}
         </Button>
       </Sheet>
 
@@ -172,32 +179,32 @@ function MealForm({ initial, meal }: { initial: MealDraft; meal?: Meal }) {
       />
       <ConfirmDialog
         open={confirmLeave}
-        title="Save before leaving?"
-        message="This meal has unsaved changes."
-        confirmLabel="Keep editing"
-        cancelLabel="Discard changes"
+        title={t.saveBeforeLeaving}
+        message={t.unsavedChanges}
+        confirmLabel={t.keepEditing}
+        cancelLabel={t.discardChanges}
         onConfirm={() => setConfirmLeave(false)}
         onCancel={discard}
       />
       <CompanionDialog
         open={!!reward}
-        title="Meal logged!"
+        title={t.mealLogged}
         metric={`＋${reward?.awarded ?? 0} BP`}
         body={
           <>
-            {typeLabel(draft.type)} saved. {r ? tasksDone(r, today()).length : 0} of 3 tasks done today.
+            {t.rewardSaved(typeLabel(draft.type), r ? tasksDone(r, today()).length : 0)}
             <br />
-            Growth progress: {growthBefore}% → {growthNow}%.
+            {t.rewardGrowth(growthBefore, growthNow)}
           </>
         }
         footnote={
           <>
-            Balance: {(r?.balance ?? 0) - (reward?.awarded ?? 0)} → {r?.balance ?? 0} BP
+            {t.rewardBalance((r?.balance ?? 0) - (reward?.awarded ?? 0), r?.balance ?? 0)}
             <br />
-            Today's meal reward claimed
+            {t.rewardClaimed}
           </>
         }
-        confirmLabel="Done"
+        confirmLabel={t.done}
         onConfirm={() => navigate(`/meals/${reward!.id}`, { replace: true, state: { banner: 'saved' } })}
       />
     </RecordPage>
@@ -219,6 +226,7 @@ function FoodSheet({
   onSave: (f: FoodItem) => void;
   onRemove: (id: string) => void;
 }) {
+  const t = useT(messages);
   const existing = target && target !== 'new' ? target : null;
   const [name, setName] = useState(existing?.name ?? '');
   const [portion, setPortion] = useState(existing?.portion ?? '');
@@ -227,26 +235,26 @@ function FoodSheet({
   return (
     <Sheet
       open={target !== null}
-      title={existing ? 'Edit food' : 'Add food'}
+      title={existing ? t.editFood : t.addFoodTitle}
       onClose={onClose}
       trailing={
         <button type="button" onClick={onClose} className="type-body-default text-text-brand">
-          Close
+          {t.close}
         </button>
       }
     >
       <p className="type-caption-default text-text-secondary">
-        {existing ? 'Update this food, then save the meal.' : `Add to ${type.toLowerCase()}. Meal time stays at ${time}.`}
+        {existing ? t.updateFoodHint : t.addToHint(type, time)}
       </p>
-      <Input label="Food name" placeholder="e.g. Burger" value={name} error={touched ? err : undefined} onBlur={() => setTouched(true)} onChange={(e) => setName(e.target.value)} />
-      <Input label="Portion" placeholder="e.g. 150 g, 1 bowl, 1 handful" value={portion} onChange={(e) => setPortion(e.target.value)} />
-      <p className="type-caption-default text-text-secondary">A name is required. You can add the portion later.</p>
+      <Input label={t.foodName} placeholder={t.foodNamePlaceholder} value={name} error={touched ? err : undefined} onBlur={() => setTouched(true)} onChange={(e) => setName(e.target.value)} />
+      <Input label={t.portion} placeholder={t.portionPlaceholder} value={portion} onChange={(e) => setPortion(e.target.value)} />
+      <p className="type-caption-default text-text-secondary">{t.nameRequiredHint}</p>
       <Button block disabled={!!err} onClick={() => onSave({ id: existing?.id ?? newId(), name: name.trim(), portion: portion.trim() })}>
-        {existing ? 'Save changes' : 'Add to meal'}
+        {existing ? t.saveChanges : t.addToMeal}
       </Button>
       {existing && (
         <button type="button" onClick={() => onRemove(existing.id)} className={cx('self-start type-body-default text-text-brand')}>
-          Remove food
+          {t.removeFood}
         </button>
       )}
     </Sheet>
