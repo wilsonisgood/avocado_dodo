@@ -6,9 +6,12 @@ import { growthPercent } from '@/data/rules';
 import { today } from '@/data/services';
 import { TASK_LINK, bp, taskRows, taskSummary } from './copy';
 import { DailyTaskRow, TasksProgress } from './parts';
+import { useT } from '@/i18n';
+import { messages } from './i18n';
 
 export function TasksPage() {
   const navigate = useNavigate();
+  const t = useT(messages);
   const r = useRewards().data;
   if (!r) return null;
   const day = today();
@@ -16,7 +19,7 @@ export function TasksPage() {
   return (
     <div className="flex flex-col gap-4 bg-bg-canvas p-6">
       <div className="flex items-center gap-3">
-        <h1 className="flex-1 type-heading-medium text-text-primary">Fruit baby tasks</h1>
+        <h1 className="flex-1 type-heading-medium text-text-primary">{t.tasksTitle}</h1>
         <span className="type-label-default text-text-brand">{bp(r.balance)}</span>
       </div>
       <TasksProgress accessory={r.equipped} percent={growthPercent(r)} caption={summary.caption} onShop={() => navigate('/shop')} />
@@ -25,9 +28,9 @@ export function TasksPage() {
         const to = TASK_LINK[row.key];
         return <DailyTaskRow key={row.key} row={row} onAction={!row.done && to ? () => navigate(to) : undefined} />;
       })}
-      <p className="type-caption-default text-text-secondary">Earn points once per task each day. Editing a log gives no extra points.</p>
-      <RecordRow title="Movement notes (optional)" detail="Log as needed. This does not count toward daily tasks." onClick={() => navigate('/movement')} />
-      <p className="type-caption-default text-text-secondary">Spend points on accessories. Your growth progress stays the same.</p>
+      <p className="type-caption-default text-text-secondary">{t.earnNote}</p>
+      <RecordRow title={t.movementTitle} detail={t.movementDetail} onClick={() => navigate('/movement')} />
+      <p className="type-caption-default text-text-secondary">{t.spendNote}</p>
     </div>
   );
 }

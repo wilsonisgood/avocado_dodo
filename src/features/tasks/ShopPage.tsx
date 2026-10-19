@@ -7,24 +7,28 @@ import { rewardsService } from '@/data/services';
 import type { AccessoryId, Rewards } from '@/data/types';
 import { type Card, type DialogCopy, type ShopTab, bp, equipped, notEnough, purchased, removed, shopCards } from './copy';
 import { AccessoryCard, CompanionStage } from './parts';
+import { useT } from '@/i18n';
+import { messages } from './i18n';
 
 export type ShopDialog = { kind: 'purchased' | 'short' | 'equipped' | 'removed'; id: AccessoryId };
 const COPY: Record<ShopDialog['kind'], (r: Rewards, id: AccessoryId) => DialogCopy> = { purchased, short: notEnough, equipped, removed };
 
 /** Shared dialog renderer for the shop and the details page. */
 export function ShopDialogView({ dialog, rewards, onClose, onEquip, onEarn }: { dialog: ShopDialog | null; rewards: Rewards; onClose: () => void; onEquip: (id: AccessoryId) => void; onEarn: () => void }) {
+  const t = useT(messages);
   if (!dialog) return null;
   const c = COPY[dialog.kind](rewards, dialog.id);
   const buttons =
     dialog.kind === 'purchased'
-      ? { confirmLabel: 'Equip now', onConfirm: () => onEquip(dialog.id), cancelLabel: 'Later' }
+      ? { confirmLabel: t.equipNow, onConfirm: () => onEquip(dialog.id), cancelLabel: t.later }
       : dialog.kind === 'short'
-        ? { confirmLabel: 'Earn points', onConfirm: onEarn, cancelLabel: 'Not now' }
-        : { confirmLabel: 'Done', onConfirm: onClose };
+        ? { confirmLabel: t.earnPoints, onConfirm: onEarn, cancelLabel: t.notNow }
+        : { confirmLabel: t.done, onConfirm: onClose };
   return <CompanionDialog open title={c.title} metric={c.metric} body={<span className="whitespace-pre-line">{c.body}</span>} footnote={<span className="whitespace-pre-line">{c.footnote}</span>} onCancel={onClose} {...buttons} />;
 }
 
 export function ShopPage() {
+  const t = useT(messages);
   const navigate = useNavigate();
   const location = useLocation();
   const [params, setParams] = useSearchParams();
@@ -55,13 +59,13 @@ export function ShopPage() {
 
   return (
     <RecordPage className="gap-3">
-      <RecordHeader title="Baby shop" fallback="/tasks" />
-      <p className="type-heading-small text-text-brand">Balance: {bp(r.balance)}</p>
+      <RecordHeader title={t.babyShop} fallback="/tasks" />
+      <p className="type-heading-small text-text-brand">{t.balance(bp(r.balance))}</p>
       <CompanionStage accessory={r.equipped} />
       <SegmentedTabs
         options={[
-          { value: 'available', label: 'Available' },
-          { value: 'mine', label: 'My accessories' },
+          { value: 'available', label: t.available },
+          { value: 'mine', label: t.myAccessories },
         ]}
         value={tab}
         onChange={setTab}
@@ -71,9 +75,9 @@ export function ShopPage() {
           <AccessoryCard key={c.id} card={c} onOpen={() => open(c)} onAction={() => act(c)} />
         ))}
       </div>
-      <p className="type-caption-default text-text-secondary">Wear one head accessory at a time. Equipping a new one replaces the current item.</p>
+      <p className="type-caption-default text-text-secondary">{t.oneAtATime}</p>
       <Button block variant="outline" onClick={() => navigate('/tasks')}>
-        Back to tasks
+        {t.backToTasks}
       </Button>
       <ShopDialogView
         dialog={dialog}

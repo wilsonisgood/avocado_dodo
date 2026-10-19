@@ -9,8 +9,11 @@ import type { AccessoryId } from '@/data/types';
 import { bp, confirmPurchase, detailCopy } from './copy';
 import { CompanionStage } from './parts';
 import { type ShopDialog, ShopDialogView } from './ShopPage';
+import { useT } from '@/i18n';
+import { messages } from './i18n';
 
 export function AccessoryPage() {
+  const t = useT(messages);
   const navigate = useNavigate();
   const { accessory } = useParams();
   const r = useRewards().data;
@@ -40,8 +43,8 @@ export function AccessoryPage() {
 
   return (
     <RecordPage className="gap-3">
-      <RecordHeader title="Accessory details" fallback="/shop" />
-      <p className="type-heading-small text-text-brand">Balance: {bp(r.balance)}</p>
+      <RecordHeader title={t.accessoryDetails} fallback="/shop" />
+      <p className="type-heading-small text-text-brand">{t.balance(bp(r.balance))}</p>
       <CompanionStage accessory={id} />
       <p className="type-caption-strong text-text-secondary">{d.preview}</p>
       <h2 className="type-heading-medium text-text-primary">{d.title}</h2>
@@ -51,7 +54,7 @@ export function AccessoryPage() {
         {d.primary}
       </Button>
       <Button block variant="outline" onClick={() => navigate('/shop')}>
-        Back to shop
+        {t.backToShop}
       </Button>
       <CompanionDialog
         open={confirming}
@@ -59,8 +62,8 @@ export function AccessoryPage() {
         metric={c.metric}
         body={c.body}
         footnote={<span className="whitespace-pre-line">{c.footnote}</span>}
-        confirmLabel="Buy now"
-        cancelLabel="Not now"
+        confirmLabel={t.buyNow}
+        cancelLabel={t.notNow}
         onConfirm={() => confirmBuy(id)}
         onCancel={() => setConfirming(false)}
       />
