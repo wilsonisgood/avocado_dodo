@@ -2,9 +2,12 @@ import type { ReactNode } from 'react';
 import { Icon, cx } from '@/components';
 import { usePhotoUrl } from '@/data/queries';
 import type { FoodItem } from '@/data/types';
+import { useT } from '@/i18n';
+import { messages } from './i18n';
 
 /** Meal photos row: thumbnails + optional "Add photo" tile (05-1). */
 export function PhotoRow({ photoIds, onAdd }: { photoIds: string[]; onAdd?: (file: File) => void }) {
+  const t = useT(messages);
   return (
     <div className="flex gap-3 overflow-x-auto">
       {photoIds.map((id) => (
@@ -13,7 +16,7 @@ export function PhotoRow({ photoIds, onAdd }: { photoIds: string[]; onAdd?: (fil
       {onAdd && (
         <label className="flex h-22 w-22 shrink-0 cursor-pointer flex-col items-center justify-center gap-3 rounded-10 border border-border-default bg-bg-surface p-3 text-icon-default">
           <Icon name="Camera" />
-          <span className="type-caption-default text-text-primary">Add photo</span>
+          <span className="type-caption-default text-text-primary">{t.addPhoto}</span>
           <input
             type="file"
             accept="image/*"
@@ -31,8 +34,9 @@ export function PhotoRow({ photoIds, onAdd }: { photoIds: string[]; onAdd?: (fil
 }
 
 function Thumb({ id }: { id: string }) {
+  const t = useT(messages);
   const { data } = usePhotoUrl(id);
-  return data ? <img src={data} alt="Meal photo" className="h-22 w-22 shrink-0 rounded-10 object-cover" /> : <div className="h-22 w-22 shrink-0 rounded-10 bg-bg-soft" />;
+  return data ? <img src={data} alt={t.mealPhoto} className="h-22 w-22 shrink-0 rounded-10 object-cover" /> : <div className="h-22 w-22 shrink-0 rounded-10 bg-bg-soft" />;
 }
 
 /** Food list card (05-1 / 05-3). `onSelect` makes rows tappable with a chevron. */

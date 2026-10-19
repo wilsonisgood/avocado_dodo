@@ -1,34 +1,30 @@
 import type { FoodItem, Meal, MealType, Nutrition } from '@/data/types';
+import { tr } from '@/i18n';
+import { fmtDate } from '@/i18n/format';
+import { messages } from './i18n';
 
-export const MEAL_TYPES: { type: MealType; label: string }[] = [
-  { type: 'breakfast', label: 'Breakfast' },
-  { type: 'lunch', label: 'Lunch' },
-  { type: 'dinner', label: 'Dinner' },
-  { type: 'snack', label: 'Snack' },
-];
-export const typeLabel = (t: MealType) => MEAL_TYPES.find((m) => m.type === t)!.label;
-export const parseMealType = (s: string | null): MealType | undefined => MEAL_TYPES.find((m) => m.type === s)?.type;
+export const MEAL_TYPE_IDS: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
+/** Chip list with labels in the active language (call at render time). */
+export const mealTypes = (): { type: MealType; label: string }[] => MEAL_TYPE_IDS.map((type) => ({ type, label: typeLabel(type) }));
+export const typeLabel = (t: MealType) => tr(messages)[t];
+export const parseMealType = (s: string | null): MealType | undefined => MEAL_TYPE_IDS.find((m) => m === s);
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-/** '2026-03-11' → 'Mar 11, 2026' */
-export function formatDate(iso: string): string {
-  const [y, m, d] = iso.split('-').map(Number);
-  return `${MONTHS[m - 1]} ${d}, ${y}`;
-}
+export const formatDate = (iso: string): string => fmtDate(iso);
 
 export type MealDraft = Pick<Meal, 'date' | 'time' | 'type' | 'loggedFor' | 'photoIds' | 'foods'>;
 
 /** A meal can be saved once it has a valid time and at least one food. */
 export function validateMeal(d: MealDraft): { ok: boolean; errors: { time?: string; foods?: string } } {
+  const t = tr(messages);
   const errors: { time?: string; foods?: string } = {};
-  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(d.time)) errors.time = 'Enter a time like 18:30';
-  if (d.foods.length === 0) errors.foods = 'Add a food to save this meal.';
+  if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(d.time)) errors.time = t.errTime;
+  if (d.foods.length === 0) errors.foods = t.errFoods;
   return { ok: Object.keys(errors).length === 0, errors };
 }
 
 /** A food needs a name; the portion is optional. */
 export function validateFood(name: string): string | undefined {
-  return name.trim() ? undefined : 'A name is required.';
+  return name.trim() ? undefined : tr(messages).errName;
 }
 
 export const isDirty = (a: MealDraft, b: MealDraft) => JSON.stringify(a) !== JSON.stringify(b);
