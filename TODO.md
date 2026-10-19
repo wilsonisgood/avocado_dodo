@@ -23,7 +23,7 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 | M-2 | meals | 05-0～05-5、05-2a/2b、05-S1/S2、12-R1、12-F1/F2 | sonnet 60 | — | ✅ 2026-10-19 合併（14/60 輪）|
 | M-3 | movement | 08-0～08-7 | sonnet 55 | — | ✅ 2026-10-19 合併（18/55 輪）|
 | M-4 | mood | 07-0～07-5、07-S1/S2 | sonnet 50 | — | ✅ 2026-10-19 合併（14/50 輪）|
-| M-5a | appointments 列表／月曆 | 09-0～09-2c、09-E0、09-R* | sonnet 55 | — | 🔵 sonnet／22 輪，worktree `.claude/worktrees/appts-list`、分支 `feat/appts-list` |
+| M-5a | appointments 列表／月曆 | 09-0～09-2c、09-E0、09-R* | sonnet 55 | — | ✅ 2026-10-19 合併（9/22 輪）|
 | M-5b | appointments 新增／編輯／詳情 | 09-3～09-13、09-S* | sonnet 60 | —（拆成 list/ 與 form/ 後可平行） | 🔵 sonnet／26 輪，worktree `.claude/worktrees/appts-form`、分支 `feat/appts-form` |
 | M-6 | records（05.Health Record 彙整頁） | 05.Health Record | sonnet 40 | M-2、M-3、M-4 | 🔵 sonnet／18 輪，worktree `.claude/worktrees/records`、分支 `feat/records` |
 | M-7 | profile | 07.Personal、10-* | sonnet 60 | — | 🔵 sonnet／26 輪，worktree `.claude/worktrees/profile`、分支 `feat/profile` |
