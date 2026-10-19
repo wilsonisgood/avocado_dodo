@@ -1,4 +1,7 @@
 import { toISODate } from '@/data/rules';
+import { fmtDate } from '@/i18n/format';
+import { tr } from '@/i18n';
+import { messages } from './i18n';
 import type { ISODate, Meal, MealType, MoodEntry, MovementSession } from '@/data/types';
 
 // Pure helpers for the Records summary page (05.Health Record).
@@ -26,17 +29,20 @@ export function resolveDate(param: string | null | undefined, today: ISODate): I
   return ok && param <= today ? param : today;
 }
 
-const LABELS: Record<MealType, string> = { breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', snack: 'Snack' };
-export const mealTypeLabel = (t: MealType) => LABELS[t];
+export const mealTypeLabel = (type: MealType) => tr(messages)[type];
 
 /** "Breakfast (toast + soy milk)" */
 export function mealTitle(m: Meal): string {
-  const foods = m.foods.map((f) => f.name).join(' + ');
-  return foods ? `${LABELS[m.type]} (${foods})` : LABELS[m.type];
+  const t = tr(messages);
+  const foods = m.foods.map((f) => f.name).join(t.foodSep);
+  return foods ? t.mealTitle(t[m.type], foods) : t[m.type];
 }
 
 /** "08:30 | 350 kcal" or "12:15 | Not estimated" */
-export const mealDetail = (m: Meal): string => `${m.time} | ${m.nutrition?.confirmed ? `${Math.round(m.nutrition.kcal)} kcal` : 'Not estimated'}`;
+export const mealDetail = (m: Meal): string => {
+  const t = tr(messages);
+  return t.mealDetail(m.time, m.nutrition?.confirmed ? t.kcal(Math.round(m.nutrition.kcal)) : t.notEstimated);
+};
 
 export const MAIN_MEALS: MealType[] = ['breakfast', 'lunch', 'dinner'];
 
@@ -61,9 +67,5 @@ export function clockTime(iso: string): string {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-/** "2026-03-11" → "Mar 11, 2026" */
-export function dateLabel(iso: ISODate): string {
-  const [y, m, d] = iso.split('-').map(Number);
-  return `${MONTHS[m - 1]} ${d}, ${y}`;
-}
+/** "2026-03-11" → "Mar 11, 2026" / "2026年3月11日" */
+export const dateLabel = (iso: ISODate): string => fmtDate(iso);
