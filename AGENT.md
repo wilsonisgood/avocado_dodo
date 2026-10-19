@@ -180,7 +180,8 @@ src/features/<模組>/
 8. **不要** push、merge、動 `main`、`git switch`，也不要 cd 到別的 worktree 改東西。不要部署。
 9. Python 只用 `python3 -I`，裝套件用 `pip3 install`（⛔ 沒有 `python`／`pip`）。
    **所有檔案、快取、暫存都留在專案資料夾內**（CLAUDE.md §7）；⛔ 寫到 `/tmp`、家目錄或 Claude 的暫存區。
-   臨時驗證腳本放 `.cache/tmp/`（不進 git）。⛔ 用 `npx <套件>` 執行專案沒安裝的套件（會觸發下載；需要就寫進整合事項）。
+   臨時驗證腳本放**自己 checkout 的** `.tmp/`（不進 git）。⛔ 放 `.cache/`：worktree 的 `.cache` 是指向主專案的 symlink，
+   腳本裡的 `import.meta.dirname` 會解析到主專案，等於在驗主專案而不是自己的分支（PITFALLS §app 5）。⛔ 用 `npx <套件>` 執行專案沒安裝的套件（會觸發下載；需要就寫進整合事項）。
    設計稿的向量一律用 `public/assets/vectors/<id>.svg`（大綱的 `svg:` 欄位），⛔ 用相近的 Icon 代替。
 10. 程式風格照周圍的程式碼；英文註解引用條號時寫成 `(METHOD §2)`。
 

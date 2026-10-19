@@ -12,9 +12,11 @@ export function scheduleText(n: NotificationSettings, key: ReminderKey): string 
     case 'movement':
       return n.movement.on ? `Daily at ${n.movement.time}` : `Off · Time saved as ${n.movement.time}`;
     case 'meals': {
+      // Only the meals switched on in 11-6 (all three when none are, so the saved times stay visible).
       const t = n.meals.times;
-      const times = [t.breakfast, t.lunch, t.dinner].join('／');
-      return n.meals.on ? times : `Off · Times saved as ${times}`;
+      const on = (['breakfast', 'lunch', 'dinner'] as const).filter((m) => n.meals.enabled[m]);
+      const times = (on.length ? on : (['breakfast', 'lunch', 'dinner'] as const)).map((m) => t[m]).join('／');
+      return n.meals.on && on.length ? times : `Off · Times saved as ${times}`;
     }
     case 'weekly':
       return n.weekly.on ? `${WEEKDAYS_LONG[n.weekly.weekday] ?? 'Sundays'} at ${n.weekly.time}` : `Off · Time saved as ${n.weekly.time}`;

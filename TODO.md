@@ -27,7 +27,7 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 | M-5b | appointments 新增／編輯／詳情 | 09-3～09-13、09-S* | sonnet 60 | —（拆成 list/ 與 form/ 後可平行） | ✅ 2026-10-19 合併（14/26輪）|
 | M-6 | records（05.Health Record 彙整頁） | 05.Health Record | sonnet 40 | M-2、M-3、M-4 | ✅ 2026-10-19 合併（11/18 輪）|
 | M-7 | profile | 07.Personal、10-* | sonnet 60 | — | ✅ 2026-10-19 合併（21/26 輪）|
-| M-8 | settings | 11-* | sonnet 55 | — | 🔵 sonnet／24 輪，worktree `.claude/worktrees/settings`、分支 `feat/settings` |
+| M-8 | settings | 11-* | sonnet 55 | — | ✅ 2026-10-19 合併（27/24 輪，含一次補強）|
 | M-9 | tasks／shop | 06.Task、12-*（51 個 frame，多數是點數狀態） | opus 70 | M-2、M-4 | ✅ 2026-10-19 合併（24/30 輪，opus）|
 | M-10 | home | 04.Main Page | sonnet 45 | —（只透過資料層與路由約定） | ✅ 2026-10-19 合併（16/22輪）|
 
@@ -35,10 +35,10 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 
 ## 整合時要接的線（主 session）
 
-- M-7 合併時：設定 11-0 的 Personal／Pregnancy／Body details 三列改連到個人頁的編輯路徑（目前都連 `/profile`）。
+（目前沒有）
+
 
 ## 細修清單（不派任務，主 session 收集起來一次修，AGENT §3b）
 
-- `tools/shot.mjs` 加 `--fill "標籤=值"`：子任務為了打字各自寫了驗證腳本（`.cache/tmp/flow.mjs`、`.cache/m2.mjs`），之後統一用工具。
 - 從 `.fig` 匯出的 SVG 顏色是寫死的淺色值，深色模式下 onboarding 插圖、裝飾向量不會跟著變。要的話改成 inline SVG＋`currentColor`。
 - onboarding 雙胞胎圖示的旋轉方向是子任務目測的，有參考圖（U3）時再對一次。

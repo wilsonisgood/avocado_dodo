@@ -35,3 +35,11 @@ describe('misc', () => {
     expect(isDirty(base, setOn(base, 'mood', false))).toBe(true);
   });
 });
+
+describe('meal schedule text', () => {
+  it('lists only the meals switched on', () => {
+    const n = defaultNotifications();
+    expect(scheduleText(n, 'meals')).toBe('08:00／12:00／18:00');
+    expect(scheduleText({ ...n, meals: { ...n.meals, enabled: { breakfast: true, lunch: false, dinner: true } } }, 'meals')).toBe('08:00／18:00');
+  });
+});

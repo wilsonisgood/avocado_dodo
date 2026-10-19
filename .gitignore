@@ -8,3 +8,4 @@ design/ref/
 shots/
 .claude/worktrees/
 /.cache
+/.tmp

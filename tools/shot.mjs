@@ -1,6 +1,7 @@
 // Screenshot acceptance tool (CLAUDE.md 憲法 1, METHOD §4).
 //   node tools/shot.mjs [--demo] [--dark] [--full] [--reload] [--click "Text"]... <route> [<route>...]
 //   --reload: after the clicks, reload the page before the shot (proves data was persisted)
+//   --click "switch:Lunch" clicks the Toggle named Lunch (switches have no visible text)
 //   e.g. node tools/shot.mjs --demo --full home tasks meals/new
 // Routes are app hash routes (#/home), written without a leading slash; "playground" is the in-app dev menu.
 // Starts its own Vite dev server, opens each route at 420×896 in Playwright's Chromium kept inside the
@@ -56,8 +57,11 @@ for (const route of routes) {
   await page.goto(`${base}#/${route}`);
   await page.waitForLoadState('networkidle');
   for (const text of clicks) {
-    // Visible text first; fall back to the accessible name (Toggle switches have no text, only aria-label).
-    await page.getByText(text, { exact: true }).or(page.getByLabel(text, { exact: true })).first().click();
+    // "switch:Lunch" = the Toggle named Lunch. Otherwise visible text first, then the accessible name.
+    const target = text.startsWith('switch:')
+      ? page.getByRole('switch', { name: text.slice(7), exact: true })
+      : page.getByText(text, { exact: true }).or(page.getByLabel(text, { exact: true }));
+    await target.first().click();
     await page.waitForTimeout(150);
   }
   if (flag('--reload')) {

@@ -10,9 +10,9 @@ export function Settings() {
     <RecordPage className="gap-4">
       <RecordHeader title="Settings" onBack={leave} />
       <SettingRow icon="Reminder" title="Notifications" detail="Reminder types, times and toggles" onClick={() => navigate('/settings/notifications')} />
-      <SettingRow icon="Profile" title="Personal details" detail="Edit nickname" onClick={() => navigate('/profile')} />
-      <SettingRow icon="Calendar" title="Pregnancy details" detail="Due date, week and pregnancy type" onClick={() => navigate('/profile')} />
-      <SettingRow icon="Record" title="Body details" detail="Height, weight and waist size" onClick={() => navigate('/profile')} />
+      <SettingRow icon="Profile" title="Personal details" detail="Edit nickname" onClick={() => navigate('/profile/personal')} />
+      <SettingRow icon="Calendar" title="Pregnancy details" detail="Due date, week and pregnancy type" onClick={() => navigate('/profile/pregnancy')} />
+      <SettingRow icon="Record" title="Body details" detail="Height, weight and waist size" onClick={() => navigate('/profile/body')} />
       <p className="type-caption-default text-text-secondary">Manage notification permissions in device settings.</p>
       <Button block onClick={() => navigate('/profile')}>
         Done
