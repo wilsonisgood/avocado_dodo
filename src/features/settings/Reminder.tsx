@@ -1,10 +1,11 @@
-import { Button, Chip, LabeledField, NotificationRow, PickerField, RecordHeader, RecordPage, ReminderOption, TimeFields, cx } from '@/components';
+import { Button, Chip, FieldControl, LabeledField, NotificationRow, PickerField, RecordHeader, RecordPage, ReminderOption, SegmentedTabs, TimeFields, cx } from '@/components';
 import type { IconName } from '@/components';
 import { keys, useAction, useSettings } from '@/data/queries';
 import { settingsService } from '@/data/services';
 import type { NotificationSettings, ReminderKey, TimeOfDay } from '@/data/types';
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router';
+import { REMINDER_OPTIONS, type ReminderOptionKey, type ReminderUnit, customMinutes, isOptionSelected, reminderText, splitMinutes, toggleReminder } from '@/data/reminders';
 import { WEEKDAYS, isOn, isReminderKey, savedNotice, setOn } from './logic';
 import { useLeave } from './useLeave';
 
@@ -23,7 +24,6 @@ const ROW: Record<ReminderKey, { icon: IconName; title: string; description: str
   weekly: { icon: 'Milestone', title: 'Weekly updates', description: 'One reminder each week' },
   appointments: { icon: 'Calendar', title: 'Appointment reminders', description: 'Prenatal visits and other health plans' },
 };
-const APPT_OPTIONS = ['At start time', '1 hour before', '1 day before', 'Custom reminder'];
 
 function getTime(n: NotificationSettings, key: ReminderKey, slot: Slot): TimeOfDay {
   if (slot === 'breakfast' || slot === 'lunch' || slot === 'dinner') return n.meals.times[slot];
@@ -54,8 +54,10 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
   const save = useAction(settingsService.save, [keys.settings]);
   const [draft, setDraft] = useState(saved);
   const [timeDraft, setTimeDraft] = useState<TimeOfDay>('00:00');
-  const [apptDefault, setApptDefault] = useState('1 hour before'); // no field in Settings for this; prototype-local
+  const [customN, setCustomN] = useState('30');
+  const [customUnit, setCustomUnit] = useState<ReminderUnit>('minutes');
   const slot = params.get('time') as Slot | null;
+  const custom = params.get('custom') === '1';
 
   useEffect(() => {
     if (slot) setTimeDraft(getTime(draft, rkey, slot));
@@ -67,11 +69,33 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
     navigate('/settings/notifications', { replace: true, state: { notice: savedNotice(saved, draft) } });
   };
 
+  if (custom) {
+    const confirm = () => {
+      setDraft({ ...draft, appointments: { ...draft.appointments, defaultReminder: { kind: 'custom', minutesBefore: customMinutes(Math.max(1, Number(customN) || 1), customUnit) } } });
+      navigate(-1);
+    };
+    return (
+      <RecordPage className="gap-3">
+        <RecordHeader title="Custom reminder" onBack={() => navigate(-1)} />
+        <LabeledField label="Remind me before the appointment">
+          <FieldControl inputMode="numeric" aria-label="amount" value={customN} onChange={(e) => setCustomN(e.target.value.replace(/\D/g, '').slice(0, 4))} />
+        </LabeledField>
+        <SegmentedTabs options={[{ value: 'minutes', label: 'minutes' }, { value: 'hours', label: 'hours' }, { value: 'days', label: 'days' }]} value={customUnit} onChange={setCustomUnit} />
+        <Button block onClick={confirm}>
+          Confirm
+        </Button>
+        <Button block variant="outline" onClick={() => navigate(-1)}>
+          Cancel
+        </Button>
+      </RecordPage>
+    );
+  }
+
   if (slot) {
     return (
       <RecordPage className="gap-3">
         <RecordHeader title="Reminder time" onBack={() => navigate(-1)} />
-        <TimeFields value={timeDraft} onChange={setTimeDraft} />
+        <TimeFields variant="row" value={timeDraft} onChange={setTimeDraft} />
         <Button
           block
           onClick={() => {
@@ -112,8 +136,8 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
               title={m[0].toUpperCase() + m.slice(1)}
               description="Every day"
               schedule={draft.meals.times[m]}
-              checked={draft.meals.on}
-              onChange={(v) => setDraft(setOn(draft, 'meals', v))}
+              checked={draft.meals.enabled[m]}
+              onChange={(v) => setDraft({ ...draft, meals: { ...draft.meals, enabled: { ...draft.meals.enabled, [m]: v } } })}
               onClick={() => openTime(m)}
             />
           ))}
@@ -137,11 +161,25 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
       {rkey === 'appointments' && (
         <>
           <h2 className="type-heading-small text-text-primary">Default for new appointments</h2>
-          {APPT_OPTIONS.map((o) => (
-            <ReminderOption key={o} selected={apptDefault === o} onClick={() => setApptDefault(o)}>
-              {o}
-            </ReminderOption>
-          ))}
+          {REMINDER_OPTIONS.filter((o) => o.key !== 'none').map((o) => {
+            const dr = draft.appointments.defaultReminder;
+            const sel = isOptionSelected(dr, o.key);
+            const pick = (k: ReminderOptionKey) => {
+              if (k === 'custom') {
+                const s = splitMinutes(dr.kind === 'custom' ? dr.minutesBefore : 30);
+                setCustomN(String(s.amount || 30));
+                setCustomUnit(s.unit);
+                setParams({ custom: '1' });
+              } else setDraft({ ...draft, appointments: { ...draft.appointments, defaultReminder: toggleReminder(dr, k) } });
+            };
+            const hourDay = o.key === 'hour' || o.key === 'day';
+            return (
+              <ReminderOption key={o.key} selected={sel} onClick={() => pick(o.key)}>
+                {hourDay && sel ? '✓ ' : ''}
+                {o.key === 'custom' && sel ? reminderText(dr) : o.label}
+              </ReminderOption>
+            );
+          })}
         </>
       )}
       {rkey !== 'meals' && (

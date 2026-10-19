@@ -5,7 +5,7 @@ import { settingsService } from '@/data/services';
 import type { NotificationSettings, ReminderKey } from '@/data/types';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { isOn, masterText, permissionLine, savedNotice, scheduleText, setOn } from './logic';
+import { isDirty, isOn, masterText, permissionLine, savedNotice, scheduleText, setOn } from './logic';
 import { useLeave } from './useLeave';
 
 const ROWS: { key: ReminderKey; icon: IconName; title: string; description: string }[] = [
@@ -36,6 +36,7 @@ export function Notifications() {
     setNotice(null);
   };
   const onSave = async () => {
+    if (notice === 'Saved: All reminders off' && !isDirty(data.notifications, draft)) return navigate('/settings');
     await save.mutateAsync([{ notifications: draft }]);
     setNotice(savedNotice(data.notifications, draft));
   };
@@ -50,6 +51,7 @@ export function Notifications() {
         description="Control all Nestly reminders"
         schedule={masterText(draft.all)}
         checked={draft.all}
+        onClick={() => change({ ...draft, all: !draft.all })}
         onChange={(all) => change({ ...draft, all })}
       />
       <button type="button" onClick={() => navigate('/settings/permission')} className="text-left type-caption-default text-text-secondary">

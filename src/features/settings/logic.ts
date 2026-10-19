@@ -49,3 +49,4 @@ export const isDirty = (a: unknown, b: unknown) => JSON.stringify(a) !== JSON.st
 /** 11-S2 summary pieces. */
 export const pad2 = (n: number) => String(n).padStart(2, '0');
 export const isTime = (t: TimeOfDay) => /^([01]\d|2[0-3]):[0-5]\d$/.test(t);
+
