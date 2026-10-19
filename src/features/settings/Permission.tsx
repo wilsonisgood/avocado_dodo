@@ -1,7 +1,9 @@
 import { Button, RecordEmpty, RecordHeader, RecordPage, RecordRow } from '@/components';
 import { keys, useAction, useSettings } from '@/data/queries';
 import { settingsService } from '@/data/services';
+import { useT } from '@/i18n';
 import { useNavigate } from 'react-router';
+import { messages } from './i18n';
 import { useLeave } from './useLeave';
 
 /**
@@ -9,6 +11,7 @@ import { useLeave } from './useLeave';
  * allowing notifications: it sets notifications.devicePermission = 'granted'.
  */
 export function Permission() {
+  const t = useT(messages);
   const { data } = useSettings();
   const navigate = useNavigate();
   const leave = useLeave('/settings/notifications');
@@ -20,16 +23,16 @@ export function Permission() {
   };
   return (
     <RecordPage className="gap-4">
-      <RecordHeader title="Notification permission" onBack={leave} />
-      <RecordEmpty title="Allow Nestly notifications">Your reminder times are saved. Allow device notifications to receive them.</RecordEmpty>
-      <RecordRow title="How to enable" detail="Open device settings, find Nestly and allow notifications." />
+      <RecordHeader title={t.notificationPermission} onBack={leave} />
+      <RecordEmpty title={t.allowNestly}>{t.allowNestlyBody}</RecordEmpty>
+      <RecordRow title={t.howToEnable} detail={t.howToEnableBody} />
       <Button block onClick={allow}>
-        Open device settings
+        {t.openDeviceSettings}
       </Button>
       <Button block variant="outline" onClick={leave}>
-        Not now
+        {t.notNow}
       </Button>
-      <p className="type-caption-default text-text-secondary">Device permission and in-app reminder toggles are managed separately.</p>
+      <p className="type-caption-default text-text-secondary">{t.permissionNote}</p>
     </RecordPage>
   );
 }

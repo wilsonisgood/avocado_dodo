@@ -6,24 +6,29 @@ import type { NotificationSettings, ReminderKey, TimeOfDay } from '@/data/types'
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router';
 import { REMINDER_OPTIONS, type ReminderOptionKey, type ReminderUnit, customMinutes, isOptionSelected, reminderText, splitMinutes, toggleReminder } from '@/data/reminders';
-import { WEEKDAYS, isOn, isReminderKey, savedNotice, setOn } from './logic';
+import { tr, useT } from '@/i18n';
+import { common } from '@/i18n/common';
+import { weekdayNames } from '@/i18n/format';
+import { messages } from './i18n';
+import { isOn, isReminderKey, savedNotice, setOn } from './logic';
 import { useLeave } from './useLeave';
 
 type Slot = 'time' | 'breakfast' | 'lunch' | 'dinner';
-const TITLES: Record<ReminderKey, string> = {
-  mood: 'Mood reminder',
-  movement: 'Movement reminder',
-  meals: 'Meal reminders',
-  weekly: 'Weekly update reminder',
-  appointments: 'Appointment reminders',
-};
-const ROW: Record<ReminderKey, { icon: IconName; title: string; description: string }> = {
-  mood: { icon: 'Reminder', title: 'Mood reminder', description: 'A daily moment to note how you feel' },
-  movement: { icon: 'Reminder', title: 'Movement reminder', description: "Choose whether you'd like a reminder" },
-  meals: { icon: 'Food', title: 'Meal reminders', description: 'Breakfast, lunch and dinner' },
-  weekly: { icon: 'Milestone', title: 'Weekly updates', description: 'One reminder each week' },
-  appointments: { icon: 'Calendar', title: 'Appointment reminders', description: 'Prenatal visits and other health plans' },
-};
+type Msgs = typeof messages.en;
+const titles = (t: Msgs): Record<ReminderKey, string> => ({
+  mood: t.moodReminder,
+  movement: t.movementReminder,
+  meals: t.mealReminders,
+  weekly: t.weeklyUpdateReminder,
+  appointments: t.appointmentReminders,
+});
+const rowInfo = (t: Msgs): Record<ReminderKey, { icon: IconName; title: string; description: string }> => ({
+  mood: { icon: 'Reminder', title: t.moodReminder, description: t.moodReminderDesc },
+  movement: { icon: 'Reminder', title: t.movementReminder, description: t.movementReminderDesc },
+  meals: { icon: 'Food', title: t.mealReminders, description: t.mealLogDesc },
+  weekly: { icon: 'Milestone', title: t.weeklyUpdates, description: t.weeklyUpdatesOne },
+  appointments: { icon: 'Calendar', title: t.appointmentReminders, description: t.apptReminderDesc },
+});
 
 function getTime(n: NotificationSettings, key: ReminderKey, slot: Slot): TimeOfDay {
   if (slot === 'breakfast' || slot === 'lunch' || slot === 'dinner') return n.meals.times[slot];
@@ -48,6 +53,8 @@ export function Reminder() {
 }
 
 function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationSettings }) {
+  const t = useT(messages);
+  const c = tr(common);
   const navigate = useNavigate();
   const leave = useLeave('/settings/notifications');
   const [params, setParams] = useSearchParams();
@@ -76,16 +83,16 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
     };
     return (
       <RecordPage className="gap-3">
-        <RecordHeader title="Custom reminder" onBack={() => navigate(-1)} />
-        <LabeledField label="Remind me before the appointment">
-          <FieldControl inputMode="numeric" aria-label="amount" value={customN} onChange={(e) => setCustomN(e.target.value.replace(/\D/g, '').slice(0, 4))} />
+        <RecordHeader title={c.customReminder} onBack={() => navigate(-1)} />
+        <LabeledField label={t.remindBeforeAppt}>
+          <FieldControl inputMode="numeric" aria-label={t.amount} value={customN} onChange={(e) => setCustomN(e.target.value.replace(/\D/g, '').slice(0, 4))} />
         </LabeledField>
-        <SegmentedTabs options={[{ value: 'minutes', label: 'minutes' }, { value: 'hours', label: 'hours' }, { value: 'days', label: 'days' }]} value={customUnit} onChange={setCustomUnit} />
+        <SegmentedTabs options={[{ value: 'minutes', label: t.minutesLower }, { value: 'hours', label: t.hoursLower }, { value: 'days', label: t.daysLower }]} value={customUnit} onChange={setCustomUnit} />
         <Button block onClick={confirm}>
-          Confirm
+          {t.confirm}
         </Button>
         <Button block variant="outline" onClick={() => navigate(-1)}>
-          Cancel
+          {t.cancel}
         </Button>
       </RecordPage>
     );
@@ -94,7 +101,7 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
   if (slot) {
     return (
       <RecordPage className="gap-3">
-        <RecordHeader title="Reminder time" onBack={() => navigate(-1)} />
+        <RecordHeader title={t.reminderTime} onBack={() => navigate(-1)} />
         <TimeFields variant="row" value={timeDraft} onChange={setTimeDraft} />
         <Button
           block
@@ -103,10 +110,10 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
             navigate(-1);
           }}
         >
-          Confirm time
+          {t.confirmTime}
         </Button>
         <Button block variant="outline" onClick={() => navigate(-1)}>
-          Cancel
+          {t.cancel}
         </Button>
       </RecordPage>
     );
@@ -114,10 +121,12 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
 
   const on = isOn(draft, rkey);
   const openTime = (s: Slot) => setParams({ time: s });
-  const row = ROW[rkey];
+  const row = rowInfo(t)[rkey];
+  const days = weekdayNames('short');
+  const mealName = { breakfast: t.breakfast, lunch: t.lunch, dinner: t.dinner };
   const timeField = (s: Slot) => (
     <div className={cx(!on && 'opacity-50')}>
-      <LabeledField label="Reminder time">
+      <LabeledField label={t.reminderTime}>
         <PickerField value={getTime(draft, rkey, s)} onClick={on ? () => openTime(s) : undefined} />
       </LabeledField>
     </div>
@@ -125,16 +134,16 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
 
   return (
     <RecordPage className="gap-3">
-      <RecordHeader title={TITLES[rkey]} onBack={leave} />
+      <RecordHeader title={titles(t)[rkey]} onBack={leave} />
       {rkey === 'meals' ? (
         <>
-          <p className="type-body-default text-text-secondary">Set each reminder to suit your routine.</p>
+          <p className="type-body-default text-text-secondary">{t.setEachReminder}</p>
           {(['breakfast', 'lunch', 'dinner'] as const).map((m) => (
             <NotificationRow
               key={m}
               icon="Food"
-              title={m[0].toUpperCase() + m.slice(1)}
-              description="Every day"
+              title={mealName[m]}
+              description={t.everyDay}
               schedule={draft.meals.times[m]}
               checked={draft.meals.enabled[m]}
               onChange={(v) => setDraft({ ...draft, meals: { ...draft.meals, enabled: { ...draft.meals.enabled, [m]: v } } })}
@@ -143,14 +152,14 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
           ))}
         </>
       ) : (
-        <NotificationRow icon={row.icon} title={row.title} description={row.description} schedule={on ? 'On' : rkey === 'appointments' ? 'Off' : 'Off · Your time is saved'} checked={on} onChange={(v) => setDraft(setOn(draft, rkey, v))} />
+        <NotificationRow icon={row.icon} title={row.title} description={row.description} schedule={on ? t.on : rkey === 'appointments' ? t.off : t.offTimeKept} checked={on} onChange={(v) => setDraft(setOn(draft, rkey, v))} />
       )}
       {rkey === 'weekly' && (
         <>
-          <p className="type-caption-strong text-text-primary">Day of week</p>
+          <p className="type-caption-strong text-text-primary">{t.dayOfWeek}</p>
           <div className="flex gap-1">
-            {WEEKDAYS.map((d, i) => (
-              <Chip key={d} className="flex-1 px-0" selected={draft.weekly.weekday === i} onClick={() => setDraft({ ...draft, weekly: { ...draft.weekly, weekday: i } })}>
+            {days.map((d, i) => (
+              <Chip key={i} className="flex-1 px-0" selected={draft.weekly.weekday === i} onClick={() => setDraft({ ...draft, weekly: { ...draft.weekly, weekday: i } })}>
                 {d}
               </Chip>
             ))}
@@ -160,7 +169,7 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
       {(rkey === 'mood' || rkey === 'movement' || rkey === 'weekly') && timeField('time')}
       {rkey === 'appointments' && (
         <>
-          <h2 className="type-heading-small text-text-primary">Default for new appointments</h2>
+          <h2 className="type-heading-small text-text-primary">{t.defaultForNew}</h2>
           {REMINDER_OPTIONS.filter((o) => o.key !== 'none').map((o) => {
             const dr = draft.appointments.defaultReminder;
             const sel = isOptionSelected(dr, o.key);
@@ -185,19 +194,19 @@ function ReminderForm({ rkey, saved }: { rkey: ReminderKey; saved: NotificationS
       {rkey !== 'meals' && (
       <p className="type-caption-default text-text-secondary">
         {rkey === 'weekly'
-          ? 'Reminds you to view weekly content. Your pregnancy details stay the same.'
+          ? t.weeklyNote
           : rkey === 'appointments'
-            ? 'Applies to new appointments only. Existing reminders stay the same; edit them in appointment details.'
-            : "Reminders use your device's local time."}
+            ? t.apptNote
+            : t.localTimeNote}
       </p>
       )}
       <Button block onClick={onSave}>
-        Save settings
+        {t.saveSettings}
       </Button>
       <Button block variant="outline" onClick={leave}>
-        Cancel
+        {t.cancel}
       </Button>
-      {rkey === 'movement' && <p className="type-caption-default text-text-secondary">A logging reminder, with no movement target.</p>}
+      {rkey === 'movement' && <p className="type-caption-default text-text-secondary">{t.movementNote}</p>}
     </RecordPage>
   );
 }
