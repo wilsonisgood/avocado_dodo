@@ -86,6 +86,7 @@ avocado/
 | Meal log / Food diary | 飲食紀錄／飲食日記 | 饮食记录／饮食日记 |
 | Breakfast / Lunch / Dinner / Snack | 早餐／午餐／晚餐／點心 | 早餐／午餐／晚餐／点心 |
 | Nutrition / Estimate | 營養／估算 | 营养／估算 |
+| kcal / g（單位） | 大卡／公克 | 千卡／克 |
 | Mood journal | 心情日記 | 心情日记 |
 | Movement log / Baby movements / Session | 胎動紀錄／寶寶胎動／這次紀錄 | 胎动记录／宝宝胎动／本次记录 |
 | Health appointments / Appointment | 健康行程／行程 | 健康日程／日程 |
