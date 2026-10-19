@@ -9,10 +9,11 @@ import { PhoneFrame } from './app/PhoneFrame';
 import { useApplyTheme } from './app/theme';
 
 function App() {
-  useApplyTheme();
+  const theme = useApplyTheme();
+  // Re-mount on theme change so every <img src={asset(...)}> picks the matching vector set.
   return (
     <PhoneFrame>
-      <RouterProvider router={router} />
+      <RouterProvider key={theme} router={router} />
     </PhoneFrame>
   );
 }

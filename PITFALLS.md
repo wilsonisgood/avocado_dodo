@@ -36,3 +36,5 @@
 4. 不能讓任何東西寫到專案外：npm 快取靠 `.npmrc`；Playwright 要設 `PLAYWRIGHT_BROWSERS_PATH`、用 `launchPersistentContext` 指定專案內的設定檔。
 5. **worktree 的 `.cache`、`node_modules`、`design/spec` 是 symlink**：放在裡面的腳本用 `import.meta.dirname` 算路徑，
    會解析到主專案（真實路徑），結果截圖和 Vite 都跑在主專案上。臨時腳本放 worktree 自己的 `.tmp/`。
+6. **`<img>` 載入的 SVG 讀不到頁面的 CSS 變數**：設計稿向量的顏色是寫死的。深色模式靠 assets.mjs 另產
+   `vectors-dark/`、`accessories-dark/`，`asset()` 依主題換路徑，主題變了整個 router 重新掛載。⛔ 在 SVG 裡寫 `var(--…)`。

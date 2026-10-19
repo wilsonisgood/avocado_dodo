@@ -17,7 +17,5 @@
 
 ## 細修清單（主 session，不派任務）
 
-- 從 `.fig` 匯出的 SVG 顏色寫死淺色值：深色模式下 onboarding 插圖、首頁大圓、胎動折線等不會跟著變。
-  要做的話：assets.mjs 依變數另產 dark 版 SVG，或改 inline SVG＋CSS 變數。
 - onboarding 雙胞胎圖示的旋轉方向是目測的，有參考圖（U3）時再對。
 - 有參考圖（U3）後，全部畫面逐張並排比對一次。

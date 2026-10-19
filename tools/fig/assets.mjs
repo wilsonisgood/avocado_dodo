@@ -5,7 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { loadDoc, gid, colorToCss, root } from './lib.mjs';
+import { loadDoc, gid, colorToCss, localVariables, root } from './lib.mjs';
 
 const { doc, byId, kids } = loadDoc();
 const blob = (i) => Buffer.from(doc.blobs[i], 'base64');
@@ -43,7 +43,7 @@ const solid = (paints) => {
   const p = (paints ?? []).find((x) => x.visible !== false && x.type === 'SOLID');
   if (!p) return null;
   const a = p.colorVar?.value?.alias;
-  return { css: colorToCss({ ...p.color, a: (p.color.a ?? 1) * (p.opacity ?? 1) }), variable: varName.get(a?.guid ? gid(a.guid) : a?.assetRef?.key) };
+  return { css: colorToCss({ ...p.color, a: (p.color.a ?? 1) * (p.opacity ?? 1) }), variable: varName.get(a?.guid ? gid(a.guid) : a?.assetRef?.key), opacity: p.opacity ?? 1, alpha: p.color.a ?? 1 };
 };
 
 // Collect drawable paths under a node, in the node's own coordinate space.
@@ -92,11 +92,37 @@ fs.writeFileSync(
     `export type IconName = keyof typeof iconData;\n`,
 );
 
+// ---- dark mode: re-resolve a bound variable through the darkMode entries ---------------------------
+// <img>-loaded SVGs can't see the page's CSS variables, so a second copy is written with dark colours
+// (public/assets/vectors-dark, accessories-dark); `asset()` picks it when the app is dark (PITFALLS §app 6).
+const locals = localVariables(byId);
+const localByName = new Map([...locals.values()].map((v) => [v.name, v]));
+const modeName = new Map();
+for (const s of byId.values()) if (s.type === 'VARIABLE_SET' && !s.key) for (const m of s.variableSetModes ?? []) modeName.set(gid(m.id), m.name);
+function resolveDark(name, depth = 0) {
+  const v = localByName.get(name);
+  if (!v || depth > 5) return null;
+  const entries = v.variableDataValues?.entries ?? [];
+  const e = entries.find((x) => modeName.get(gid(x.modeID)) === 'darkMode') ?? entries[0];
+  const val = e?.variableData?.value;
+  if (val?.alias?.guid) return resolveDark(locals.get(gid(val.alias.guid))?.name, depth + 1);
+  return val?.colorValue ?? null;
+}
+const darkCss = (p) => {
+  const c = p.variable && resolveDark(p.variable);
+  return c ? colorToCss({ ...c, a: (c.a ?? 1) * p.alpha * p.opacity }) : p.css;
+};
+const svgBody = (paths, dark) =>
+  paths.map((p) => `<path d="${p.d}" fill="${dark ? darkCss(p) : p.css}"${p.transform ? ` transform="${p.transform}"` : ''}${p.evenodd ? ' fill-rule="evenodd"' : ''}/>`).join('');
+
 // ---- standalone vectors referenced by specs ------------------------------------------------------
 const vecIds = JSON.parse(fs.readFileSync(path.join(root, 'design/.cache/vector-nodes.json'), 'utf8'));
 const vecDir = path.join(root, 'public/assets/vectors');
-fs.rmSync(vecDir, { recursive: true, force: true });
-fs.mkdirSync(vecDir, { recursive: true });
+const vecDarkDir = path.join(root, 'public/assets/vectors-dark');
+for (const d of [vecDir, vecDarkDir]) {
+  fs.rmSync(d, { recursive: true, force: true });
+  fs.mkdirSync(d, { recursive: true });
+}
 let empty = 0;
 for (const id of vecIds) {
   const n = byId.get(id);
@@ -106,26 +132,27 @@ for (const id of vecIds) {
   const h = +n.size.y.toFixed(3);
   // Strokes are outlined geometry and may overflow the box; give the viewBox a little slack.
   const pad = Math.max(n.strokeWeight ?? 0, 0);
-  const body = paths
-    .map((p) => `<path d="${p.d}" fill="${p.css}"${p.transform ? ` transform="${p.transform}"` : ''}${p.evenodd ? ' fill-rule="evenodd"' : ''}/>`)
-    .join('');
-  fs.writeFileSync(
-    path.join(vecDir, `${id.replace(':', '-')}.svg`),
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${-pad} ${-pad} ${w + 2 * pad} ${h + 2 * pad}" overflow="visible">${body}</svg>`,
-  );
+  for (const [dir, dark] of [[vecDir, false], [vecDarkDir, true]])
+    fs.writeFileSync(
+      path.join(dir, `${id.replace(':', '-')}.svg`),
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${-pad} ${-pad} ${w + 2 * pad} ${h + 2 * pad}" overflow="visible">${svgBody(paths, dark)}</svg>`,
+    );
 }
 
 // ---- accessories (Nestly/Accessory/*: 96×64 head pieces, composed into one SVG each) ---------------
 const accDir = path.join(root, 'public/assets/accessories');
-fs.rmSync(accDir, { recursive: true, force: true });
-fs.mkdirSync(accDir, { recursive: true });
+const accDarkDir = path.join(root, 'public/assets/accessories-dark');
+for (const d of [accDir, accDarkDir]) {
+  fs.rmSync(d, { recursive: true, force: true });
+  fs.mkdirSync(d, { recursive: true });
+}
 const accessories = [];
 for (const n of byId.values()) {
   const m = n.type === 'SYMBOL' && /^Nestly\/Accessory\/(\w+)$/.exec(n.name ?? '');
   if (!m) continue;
   const paths = collect(n, ID, []);
-  const body = paths.map((p) => `<path d="${p.d}" fill="${p.css}"${p.transform ? ` transform="${p.transform}"` : ''}${p.evenodd ? ' fill-rule="evenodd"' : ''}/>`).join('');
-  fs.writeFileSync(path.join(accDir, `${m[1].toLowerCase()}.svg`), `<svg xmlns="http://www.w3.org/2000/svg" width="${n.size.x}" height="${n.size.y}" viewBox="0 0 ${n.size.x} ${n.size.y}" overflow="visible">${body}</svg>`);
+  for (const [dir, dark] of [[accDir, false], [accDarkDir, true]])
+    fs.writeFileSync(path.join(dir, `${m[1].toLowerCase()}.svg`), `<svg xmlns="http://www.w3.org/2000/svg" width="${n.size.x}" height="${n.size.y}" viewBox="0 0 ${n.size.x} ${n.size.y}" overflow="visible">${svgBody(paths, dark)}</svg>`);
   accessories.push(m[1].toLowerCase());
 }
 

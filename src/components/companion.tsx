@@ -4,8 +4,18 @@ import { cx } from './cx';
 
 const base = import.meta.env.BASE_URL;
 
-/** Public asset URL that works under any GitHub Pages sub-path. */
-export const asset = (p: string) => `${base}${p.replace(/^\//, '')}`;
+let assetTheme: 'light' | 'dark' = 'light';
+/** Set by app/theme.ts before rendering; design vectors have a dark-mode copy (tools/fig/assets.mjs). */
+export const setAssetTheme = (t: 'light' | 'dark') => {
+  assetTheme = t;
+};
+
+/** Public asset URL that works under any GitHub Pages sub-path; design vectors follow the theme. */
+export const asset = (p: string) => {
+  const rel = p.replace(/^\//, '');
+  const themed = assetTheme === 'dark' ? rel.replace(/^assets\/(vectors|accessories)\//, 'assets/$1-dark/') : rel;
+  return `${base}${themed}`;
+};
 
 /** Closest illustrated week at or below `week` (the design ships 4, 6, 8 … 40). */
 export function fruitImageForWeek(week: number) {
