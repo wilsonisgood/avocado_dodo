@@ -1,6 +1,6 @@
 import { Button, Chip, ConfirmDialog, FieldControl, LabeledField, MonthCalendar, PickerField, RecordHeader, RecordPage, ReminderOption, TextArea, TimeFields, formatDateLong, monthOf } from '@/components';
 import { APPOINTMENT_TYPES } from '@/data/labels';
-import { keys, useAction, useAppointment } from '@/data/queries';
+import { keys, useAction, useAppointment, useSettings } from '@/data/queries';
 import { appointmentService, today } from '@/data/services';
 import type { ISODate, Reminder } from '@/data/types';
 import { useState } from 'react';
@@ -14,7 +14,11 @@ type View = 'form' | 'date' | 'time' | 'reminders' | 'custom';
 /** 09-3/09-4 New appointment (`?date=` prefill). */
 export function AppointmentNew() {
   const [params] = useSearchParams();
-  return <AppointmentForm initial={emptyDraft(parseDateParam(params.get('date')))} />;
+  const { data: settings, isPending } = useSettings();
+  if (isPending) return null;
+  // New appointments start with the default chosen in Settings 11-8 (existing ones keep theirs).
+  const initial = { ...emptyDraft(parseDateParam(params.get('date'))), reminder: settings?.notifications.appointments.defaultReminder ?? { kind: 'none' as const } };
+  return <AppointmentForm initial={initial} />;
 }
 
 /** 09-5/09-9 Edit appointment. */

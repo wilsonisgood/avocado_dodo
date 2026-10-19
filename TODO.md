@@ -35,7 +35,6 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 
 ## 整合時要接的線（主 session）
 
-- M-5b 合併時：新增預約的提醒預設值讀 `settings.notifications.appointments.defaultReminder`（11-8）。
 - M-7 合併時：設定 11-0 的 Personal／Pregnancy／Body details 三列改連到個人頁的編輯路徑（目前都連 `/profile`）。
 
 ## 細修清單（不派任務，主 session 收集起來一次修，AGENT §3b）
