@@ -25,20 +25,21 @@ export function fruitImageForWeek(week: number) {
 }
 
 /**
- * Nestly/FruitCompanion: the fruit baby (164px in a 372×180 stage) with an optional head accessory
- * (96×64 artboard drawn at 66%, top-right of the fruit as in Accessory=Bow / Leaf).
+ * Nestly/FruitCompanion: the fruit baby with an optional head accessory. Geometry from Accessory=Bow / Leaf:
+ * fruit 164px, accessory 63.36×42.24 at (71, 1) relative to the fruit — kept as percentages so the
+ * companion scales to any box. `size` in px, or 'fill' to take the parent's width (square).
  */
-export function FruitCompanion({ week, accessory, size = 164, className }: { week: number; accessory?: AccessoryId | null; size?: number; className?: string }) {
-  const k = size / 164;
+export function FruitCompanion({ week, accessory, size = 164, className }: { week: number; accessory?: AccessoryId | null; size?: number | 'fill'; className?: string }) {
+  const box = size === 'fill' ? { width: '100%', aspectRatio: '1' } : { width: size, height: size };
   return (
-    <div className={cx('relative', className)} style={{ width: size, height: size }}>
+    <div className={cx('relative', className)} style={box}>
       <img src={fruitImageForWeek(week)} alt="Your fruit baby" className="size-full object-contain" />
       {accessory && (
         <img
           src={asset(`assets/accessories/${accessory}.svg`)}
           alt=""
           className="absolute"
-          style={{ left: (175 - 104) * k, top: 1 * k, width: 63.36 * k, height: 42.24 * k }}
+          style={{ left: `${(71 / 164) * 100}%`, top: `${(1 / 164) * 100}%`, width: `${(63.36 / 164) * 100}%`, height: `${(42.24 / 164) * 100}%` }}
         />
       )}
     </div>

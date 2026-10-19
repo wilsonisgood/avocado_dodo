@@ -28,3 +28,15 @@ body {
 button {
   cursor: pointer;
 }
+
+/* Fruit baby idle motion (home header): small drift + tilt, never leaves its clipped circle.
+   Motion-sensitive users get a still image. */
+@keyframes fruit-float {
+  0% { transform: translate(-3%, 2%) rotate(-4deg); }
+  50% { transform: translate(2%, -4%) rotate(3deg); }
+  100% { transform: translate(-3%, 2%) rotate(-4deg); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fruit-float { animation: fruit-float 4s ease-in-out infinite; }
+  .fruit-float-delay { animation-delay: -2s; }
+}

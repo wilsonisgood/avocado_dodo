@@ -23,6 +23,8 @@ function CardTitle({ icon, children, right }: { icon: IconName; children: ReactN
 }
 
 // ---- header ------------------------------------------------------------------------------------
+/** The decorative circle (vector 7-3), as fractions of the header width. */
+const CIRCLE = { width: '64cqw', height: '65.8cqw', left: '45.6cqw', top: '-23cqw' } as const;
 function Header() {
   const day = today();
   const { data: profile, isLoading } = useProfile();
@@ -32,18 +34,25 @@ function Header() {
   const twins = profile?.babyCount === 'twins';
   const week = age?.weeks ?? 0;
   return (
-    <header className="relative h-67.5 shrink-0 overflow-hidden rounded-b-[40px] bg-bg-blush">
-      <img src={asset('assets/vectors/7-3.svg')} alt="" className="absolute top-[-95px] left-47 h-[271px] w-[263px]" />
+    // Sizes are fractions of the header width (cqw) so the circle keeps the same look on every device
+    // (user screenshot 2026-10-19_1.17.02: at 412px wide, Ø 263px, centre x 319px, top -95px).
+    <header className="@container relative shrink-0 overflow-hidden rounded-b-[40px] bg-bg-blush" style={{ height: 'max(270px, 65.5cqw)' }}>
+      <img src={asset('assets/vectors/7-3.svg')} alt="" className="absolute" style={CIRCLE} />
       {age && (
-        <div className="absolute top-2 right-6">
-          {twins ? (
-            <div className="relative h-[150px] w-[150px]">
-              <img src={fruitImageForWeek(week)} alt="" className="absolute top-14 left-2 size-[91px] -rotate-[32deg] object-contain" />
-              <img src={fruitImageForWeek(week)} alt="" className="absolute top-3 left-0 size-[91px] rotate-[34deg] object-contain" />
-            </div>
-          ) : (
-            <FruitCompanion week={week} size={120} />
-          )}
+        // Same box as the circle, clipped round: the fruit can float but never leaves the circle.
+        <div className="absolute overflow-hidden rounded-full" style={CIRCLE} aria-hidden>
+          <div className="absolute inset-x-0 flex items-center justify-center" style={{ top: '36%', bottom: 0 }}>
+            {twins ? (
+              <div className="relative" style={{ width: '62%', aspectRatio: '1' }}>
+                <img src={fruitImageForWeek(week)} alt="" className="fruit-float absolute top-[30%] left-[4%] w-[60%] object-contain" style={{ rotate: '-32deg' }} />
+                <img src={fruitImageForWeek(week)} alt="" className="fruit-float fruit-float-delay absolute top-0 left-[34%] w-[60%] object-contain" style={{ rotate: '34deg' }} />
+              </div>
+            ) : (
+              <div className="fruit-float" style={{ width: '46%' }}>
+                <FruitCompanion week={week} accessory={rewards?.equipped} size="fill" />
+              </div>
+            )}
+          </div>
         </div>
       )}
       <div className="absolute top-8 left-6 flex w-[200px] flex-col gap-1">
