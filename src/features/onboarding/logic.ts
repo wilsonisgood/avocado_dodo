@@ -27,10 +27,11 @@ export const emptyDraft = (): Draft => ({
   days: '0',
 });
 
-export const NICKNAME_ERROR = 'Please enter a nickname';
+/** Validators return an error code (the screen translates it); undefined = valid. */
+export type FieldError = 'nickname' | 'weeks' | 'days';
 
-export function nicknameError(nickname: string): string | undefined {
-  return nickname.trim() ? undefined : NICKNAME_ERROR;
+export function nicknameError(nickname: string): FieldError | undefined {
+  return nickname.trim() ? undefined : 'nickname';
 }
 
 /** Whole number within [min, max], or undefined when blank / invalid. */
@@ -40,8 +41,8 @@ export function parseIntIn(s: string, min: number, max: number): number | undefi
   return n >= min && n <= max ? n : undefined;
 }
 
-export const weeksError = (s: string) => (parseIntIn(s, 1, 42) === undefined ? 'Enter 1–42' : undefined);
-export const daysError = (s: string) => (parseIntIn(s, 0, 6) === undefined ? 'Enter 0–6' : undefined);
+export const weeksError = (s: string): FieldError | undefined => (parseIntIn(s, 1, 42) === undefined ? 'weeks' : undefined);
+export const daysError = (s: string): FieldError | undefined => (parseIntIn(s, 0, 6) === undefined ? 'days' : undefined);
 
 export function pregnancyFrom(d: Draft, setOn: string): PregnancyBasis | null {
   const weeks = parseIntIn(d.weeks, 1, 42);
