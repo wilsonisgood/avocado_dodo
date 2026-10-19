@@ -83,9 +83,12 @@ export type NotificationSettings = {
   devicePermission: 'granted' | 'denied' | 'unknown';
   mood: { on: boolean; time: TimeOfDay };
   movement: { on: boolean; time: TimeOfDay };
-  meals: { on: boolean; times: { breakfast: TimeOfDay; lunch: TimeOfDay; dinner: TimeOfDay } };
+  /** 11-6: one switch per meal plus a time each; `on` is the meal-log group switch on 11-1. */
+  meals: { on: boolean; enabled: { breakfast: boolean; lunch: boolean; dinner: boolean }; times: { breakfast: TimeOfDay; lunch: TimeOfDay; dinner: TimeOfDay } };
+  /** weekday: 0 = Sunday … 6 = Saturday. */
   weekly: { on: boolean; weekday: number; time: TimeOfDay };
-  appointments: { on: boolean };
+  /** 11-8: `defaultReminder` pre-fills new appointments (existing ones keep theirs). */
+  appointments: { on: boolean; defaultReminder: Reminder };
 };
 export type Settings = { notifications: NotificationSettings; theme: 'system' | 'light' | 'dark' };
 

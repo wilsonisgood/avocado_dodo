@@ -155,6 +155,7 @@ export function DevPage() {
       <SectionHeader>Schedule</SectionHeader>
       <MonthCalendar month={month} onMonthChange={setMonth} selected={day} onSelect={setDay} events={new Set(['2026-10-08', '2026-10-22'])} />
       <TimeFields title="Appointment time" value={time} onChange={setTime} />
+      <TimeFields variant="row" value={time} onChange={setTime} />
 
       <SectionHeader>Dialogs</SectionHeader>
       <div className="flex gap-2">

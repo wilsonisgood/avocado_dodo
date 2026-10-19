@@ -1,6 +1,7 @@
 import { addDays, parseISODate, toISODate } from '@/data/rules';
 import type { ISODate, TimeOfDay } from '@/data/types';
-import { IconButton } from './controls';
+import { useRef, useState } from 'react';
+import { IconButton, SegmentedTabs } from './controls';
 import { FieldControl, LabeledField } from './fields';
 import { cx } from './cx';
 
@@ -117,8 +118,20 @@ const pad2 = (n: number) => String(n).padStart(2, '0');
  * 09-S6 / 11-S2 time entry: two Nestly/ScheduleField boxes ("hours" 0–23, "minutes" 0–59)
  * plus the "Selected: 08:30 (24-hour time)" line. Always 24-hour, independent of the browser locale.
  */
-export function TimeFields({ value, onChange, title }: { value: TimeOfDay; onChange: (v: TimeOfDay) => void; title?: string }) {
+export function TimeFields({
+  value,
+  onChange,
+  title,
+  variant = 'stacked',
+}: {
+  value: TimeOfDay;
+  onChange: (v: TimeOfDay) => void;
+  title?: string;
+  /** 'stacked' = 09-S6 (appointments). 'row' = 11-S2 (settings): hours/minutes tabs, side-by-side fields, big "Selected". */
+  variant?: 'stacked' | 'row';
+}) {
   const [h, m] = value.split(':').map(Number);
+  if (variant === 'row') return <TimeFieldsRow h={h} m={m} value={value} onChange={onChange} />;
   return (
     <div className="flex flex-col gap-4">
       {title && <h2 className="type-heading-small text-text-primary">{title}</h2>}
@@ -129,6 +142,30 @@ export function TimeFields({ value, onChange, title }: { value: TimeOfDay; onCha
         <FieldControl inputMode="numeric" aria-label="minutes" value={pad2(m)} onChange={(e) => onChange(`${pad2(h)}:${pad2(clampInt(e.target.value, 59))}`)} />
       </LabeledField>
       <p className="type-body-default text-text-secondary">Selected: {value} (24-hour time)</p>
+    </div>
+  );
+}
+
+function TimeFieldsRow({ h, m, value, onChange }: { h: number; m: number; value: TimeOfDay; onChange: (v: TimeOfDay) => void }) {
+  const [tab, setTab] = useState<'hours' | 'minutes'>('hours');
+  const hours = useRef<HTMLInputElement>(null);
+  const minutes = useRef<HTMLInputElement>(null);
+  const pick = (t: 'hours' | 'minutes') => {
+    setTab(t);
+    (t === 'hours' ? hours : minutes).current?.focus();
+  };
+  return (
+    <div className="flex flex-col gap-3">
+      <SegmentedTabs options={[{ value: 'hours', label: 'hours' }, { value: 'minutes', label: 'minutes' }]} value={tab} onChange={pick} />
+      <div className="flex items-center gap-3">
+        <LabeledField label="Hour (00–23)" className="flex-1">
+          <FieldControl ref={hours} inputMode="numeric" aria-label="hours" value={pad2(h)} onFocus={() => setTab('hours')} onChange={(e) => onChange(`${pad2(clampInt(e.target.value, 23))}:${pad2(m)}`)} />
+        </LabeledField>
+        <LabeledField label="Minute (00–59)" className="flex-1">
+          <FieldControl ref={minutes} inputMode="numeric" aria-label="minutes" value={pad2(m)} onFocus={() => setTab('minutes')} onChange={(e) => onChange(`${pad2(h)}:${pad2(clampInt(e.target.value, 59))}`)} />
+        </LabeledField>
+      </div>
+      <p className="type-heading-small text-text-primary">Selected: {value}</p>
     </div>
   );
 }

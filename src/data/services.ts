@@ -150,13 +150,23 @@ export const defaultNotifications = (): NotificationSettings => ({
   all: true,
   devicePermission: 'granted',
   mood: { on: true, time: '20:30' },
-  movement: { on: false, time: '15:00' },
-  meals: { on: true, times: { breakfast: '08:00', lunch: '12:00', dinner: '18:00' } },
-  weekly: { on: true, weekday: 1, time: '09:00' },
-  appointments: { on: true },
+  movement: { on: false, time: '20:00' },
+  meals: { on: true, enabled: { breakfast: true, lunch: true, dinner: true }, times: { breakfast: '08:00', lunch: '12:00', dinner: '18:00' } },
+  weekly: { on: true, weekday: 0, time: '09:00' },
+  appointments: { on: true, defaultReminder: { kind: 'preset', preset: '1d+1h' } },
 });
 export const settingsService = {
-  get: async (): Promise<Settings> => (await settingsDoc.get()) ?? { notifications: defaultNotifications(), theme: 'system' },
+  async get(): Promise<Settings> {
+    const saved = await settingsDoc.get();
+    const d = defaultNotifications();
+    if (!saved) return { notifications: d, theme: 'system' };
+    // Older saves may miss fields added later (meals.enabled, appointments.defaultReminder): fill from defaults.
+    const n = saved.notifications;
+    return {
+      ...saved,
+      notifications: { ...d, ...n, meals: { ...d.meals, ...n.meals }, appointments: { ...d.appointments, ...n.appointments } },
+    };
+  },
   async save(patch: Partial<Settings>) {
     return settingsDoc.set({ ...(await settingsService.get()), ...patch });
   },

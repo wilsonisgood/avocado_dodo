@@ -56,7 +56,8 @@ for (const route of routes) {
   await page.goto(`${base}#/${route}`);
   await page.waitForLoadState('networkidle');
   for (const text of clicks) {
-    await page.getByText(text, { exact: true }).first().click();
+    // Visible text first; fall back to the accessible name (Toggle switches have no text, only aria-label).
+    await page.getByText(text, { exact: true }).or(page.getByLabel(text, { exact: true })).first().click();
     await page.waitForTimeout(150);
   }
   if (flag('--reload')) {

@@ -1,4 +1,4 @@
-import { useId, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react';
+import { useId, type ComponentProps, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from 'react';
 import { cx } from './cx';
 
 /**
@@ -39,7 +39,7 @@ export function Input({
 }
 
 /** Nestly/FieldControl: 44px surface field, radius 16, Body/Default. Bare control (no label). */
-export function FieldControl({ className, ...rest }: InputHTMLAttributes<HTMLInputElement>) {
+export function FieldControl({ className, ...rest }: ComponentProps<'input'>) {
   return (
     <input
       className={cx(
