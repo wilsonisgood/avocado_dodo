@@ -94,6 +94,7 @@ avocado/
 | Twins / One baby / Not sure yet | 雙胞胎／一個寶寶／還不確定 | 双胞胎／一个宝宝／还不确定 |
 | Profile / Nickname | 個人資料／暱稱 | 个人资料／昵称 |
 | Settings / Notifications / Reminder | 設定／通知／提醒 | 设置／通知／提醒 |
+| Care team / Maternity care team | 醫護團隊／產科醫護團隊 | 医护团队／产科医护团队 |
 | Save / Cancel / Edit / Delete / Done | 儲存／取消／編輯／刪除／完成 | 保存／取消／编辑／删除／完成 |
 | Discard changes / Keep editing | 捨棄變更／繼續編輯 | 放弃更改／继续编辑 |
 
