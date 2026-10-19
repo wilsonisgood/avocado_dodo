@@ -7,6 +7,7 @@ import type { Appointment, Draft, Meal, MoodEntry, MovementSession, Rewards } fr
 const at = (date: string, time: string) => new Date(`${date}T${time}:00`).toISOString();
 
 export async function loadDemoData() {
+  const { language } = await settingsService.get(); // keep the language the viewer picked
   await source.reset();
   const today = toISODate(clock.now());
 
@@ -18,7 +19,7 @@ export async function loadDemoData() {
     pregnancy: { kind: 'dueDate', dueDate: dueDateFromAge(4, 0, today) },
     body: { heightCm: 168, prePregnancyWeightKg: 53, currentWeightKg: 55, waistCm: 82, updatedOn: today },
   });
-  await settingsService.save({ notifications: defaultNotifications(), theme: 'system' });
+  await settingsService.save({ notifications: defaultNotifications(), theme: 'system', language });
 
   const meals: Draft<Meal>[] = [
     { date: today, time: '08:30', type: 'breakfast', loggedFor: 'Me', photoIds: [], foods: [{ id: 'f1', name: 'Toast', portion: '2 slices' }, { id: 'f2', name: 'Soy milk', portion: '1 glass' }], nutrition: { kcal: 350, proteinG: 15, carbsG: 48, confirmed: true } },

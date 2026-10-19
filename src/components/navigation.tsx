@@ -1,13 +1,15 @@
 import { NavLink } from 'react-router';
+import { tr } from '@/i18n';
+import { common } from '@/i18n/common';
 import { Icon, type IconName } from './Icon';
 
 // Nestly/BottomNavigation + Nestly/NavItem: 76px surface bar (12px bottom pad), four 97.5px items.
 // Icons are two-tone: Default = peach + disabled, Selected = blush + active (from the component overrides).
-const items: { to: string; label: string; icon: IconName }[] = [
-  { to: '/home', label: 'Home', icon: 'Home' },
-  { to: '/records', label: 'Records', icon: 'Record' },
-  { to: '/tasks', label: 'Tasks', icon: 'Tasks' },
-  { to: '/profile', label: 'Profile', icon: 'Profile' },
+const items: { to: string; label: 'navHome' | 'navRecords' | 'navTasks' | 'navProfile'; icon: IconName }[] = [
+  { to: '/home', label: 'navHome', icon: 'Home' },
+  { to: '/records', label: 'navRecords', icon: 'Record' },
+  { to: '/tasks', label: 'navTasks', icon: 'Tasks' },
+  { to: '/profile', label: 'navProfile', icon: 'Profile' },
 ];
 
 // Profile's four layers alternate (disabled, disabled, peach, peach); the other icons are (peach, disabled).
@@ -25,7 +27,7 @@ export function BottomNavigation() {
           {({ isActive }) => (
             <>
               <Icon name={it.icon} layers={tones(it.icon, isActive)} />
-              <span className={`type-caption-default ${isActive ? 'text-text-rose' : 'text-text-muted'}`}>{it.label}</span>
+              <span className={`type-caption-default ${isActive ? 'text-text-rose' : 'text-text-muted'}`}>{tr(common)[it.label]}</span>
             </>
           )}
         </NavLink>

@@ -90,7 +90,9 @@ export type NotificationSettings = {
   /** 11-8: `defaultReminder` pre-fills new appointments (existing ones keep theirs). */
   appointments: { on: boolean; defaultReminder: Reminder };
 };
-export type Settings = { notifications: NotificationSettings; theme: 'system' | 'light' | 'dark' };
+/** 'system' follows the device language (zh-TW/HK → 繁中, other zh → 简中, else English). */
+export type Language = 'system' | 'en' | 'zh-Hant' | 'zh-Hans';
+export type Settings = { notifications: NotificationSettings; theme: 'system' | 'light' | 'dark'; language: Language };
 
 // ---- tasks / points / shop (06, 12-*) ------------------------------------------------------------
 export type TaskKey = 'meal' | 'mood' | 'checkIn';

@@ -1,31 +1,32 @@
-// Display labels shared by several modules (appointments list / details, home). Text is from the design.
+// Display labels shared by several modules (appointments list / details, home). English text is from the
+// design; translations in src/i18n/common.ts. `label` is a getter so it follows the active language.
+import { common } from '@/i18n/common';
+import { fmtDateWeekday } from '@/i18n/format';
+import { tr } from '@/i18n';
 import { daysBetween } from './rules';
 import type { AppointmentType, ISODate } from './types';
 
-export const APPOINTMENT_TYPES: { value: AppointmentType; label: string }[] = [
-  { value: 'prenatal', label: 'Prenatal' },
-  { value: 'injection', label: 'Injection' },
-  { value: 'bloodTest', label: 'Blood test' },
-  { value: 'other', label: 'Other' },
-];
-export const appointmentTypeLabel = (t: AppointmentType) => APPOINTMENT_TYPES.find((x) => x.value === t)!.label;
+const TYPE_KEY = { prenatal: 'typePrenatal', injection: 'typeInjection', bloodTest: 'typeBloodTest', other: 'typeOther' } as const;
+export const APPOINTMENT_TYPES: { value: AppointmentType; readonly label: string }[] = (Object.keys(TYPE_KEY) as AppointmentType[]).map((value) => ({
+  value,
+  get label() {
+    return tr(common)[TYPE_KEY[value]];
+  },
+}));
+export const appointmentTypeLabel = (t: AppointmentType) => tr(common)[TYPE_KEY[t]];
 
 /** "Today", "Tomorrow", "In 4 days", "2 days ago" (Nestly/Home/Appointment shows "In 4 days"). */
 export function relativeDay(date: ISODate, today: ISODate) {
+  const t = tr(common);
   const n = daysBetween(today, date);
-  if (n === 0) return 'Today';
-  if (n === 1) return 'Tomorrow';
-  if (n === -1) return 'Yesterday';
-  return n > 0 ? `In ${n} days` : `${-n} days ago`;
+  if (n === 0) return t.today;
+  if (n === 1) return t.tomorrow;
+  if (n === -1) return t.yesterday;
+  return n > 0 ? t.inDays(n) : t.daysAgo(-n);
 }
 
-const WEEKDAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTH = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-/** "Oct 22, Thu" (home appointment card, 09 lists). */
-export function shortDateWithWeekday(date: ISODate) {
-  const [y, m, d] = date.split('-').map(Number);
-  return `${MONTH[m - 1]} ${d}, ${WEEKDAY[new Date(y, m - 1, d).getDay()]}`;
-}
+/** "Oct 22, Thu" · "10月22日（週四）" (home appointment card, 09 lists). */
+export const shortDateWithWeekday = (date: ISODate) => fmtDateWeekday(date);
 
 /** Kept for existing callers; same text as reminderText. */
 export { reminderText as reminderLabel } from './reminders';

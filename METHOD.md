@@ -52,6 +52,51 @@ avocado/
 - 圓角 `rounded-10/14/16/24/999`、陰影 `shadow-card`／`shadow-floating`；間距用 Tailwind 4px 刻度（`p-4` = 16px）。
 - 圖示 `<Icon name="Calendar" />`；素材網址用 `asset('assets/...')`（PITFALLS §app 3）。
 
+## §3c 多語系（English／繁體中文／简体中文）
+
+1. 語言：`Settings.language` = 'system' | 'en' | 'zh-Hant' | 'zh-Hans'；'system' 跟隨裝置（zh-TW/HK → 繁中，其他 zh → 简中，其餘英文）。
+   切換：設定頁（`LanguagePicker`）、歡迎頁右上（`LanguageButton`），都在 `@/app/LanguagePicker`。換語言整個 App 重新掛載。
+2. **每個模組一份字典** `src/features/<模組>/i18n.ts`：
+   ```ts
+   import { defineMessages } from '@/i18n';
+   export const messages = defineMessages({
+     en: { title: 'Mood journal', saved: (n: number) => `${n} saved` },
+     'zh-Hant': { title: '心情日記', saved: (n: number) => `已儲存 ${n} 筆` },
+     'zh-Hans': { title: '心情日记', saved: (n: number) => `已保存 ${n} 条` },
+   });
+   ```
+   畫面裡 `const t = useT(messages)`，用 `t.title`、`t.saved(3)`。key 由英文決定，中文缺 key 或型別不同會編譯失敗。
+   兩個以上模組共用的字放 `src/i18n/common.ts`（主 session 擁有）。英文 = 設計稿原文，⛔ 改英文。
+3. **日期／數字一律用 `@/i18n/format`**：`fmtDate`（Oct 19, 2026／2026年10月19日）、`fmtDateWeekday`、`fmtMonthDay`、
+   `fmtMonthYear`、`fmtDateNumeric`（2026/10/19，三語相同）、`fmtTime`、`fmtNumber`、`weekdayNames`。⛔ 自己拼月份名稱。
+4. 資料層的標籤已經跟著語言：`appointmentTypeLabel`、`relativeDay`、`reminderText`、`REMINDER_OPTIONS[].label`、
+   `ACCESSORIES[].title`、`moodMeta[].label`。⛔ 使用者輸入的內容（暱稱、備註、食物名稱）不翻譯。
+5. **健康相關文字**（安全提示、孕期時間軸、檢查名稱、營養說明）照原文忠實翻譯、不增減內容，並列進回報的「健康文字」，
+   由使用者審（LEDGER §翻譯待審）。
+6. 術語表（三語一致，翻譯一律照這張）：
+
+| English | 繁體中文 | 简体中文 |
+|---|---|---|
+| Fruit baby | 水果寶寶 | 水果宝宝 |
+| BP（點數） | BP | BP |
+| Growth progress | 成長進度 | 成长进度 |
+| Daily tasks / Daily check-in | 每日任務／每日簽到 | 每日任务／每日签到 |
+| Baby shop / Accessories | 寶寶商店／飾品 | 宝宝商店／饰品 |
+| Records | 紀錄 | 记录 |
+| Meal log / Food diary | 飲食紀錄／飲食日記 | 饮食记录／饮食日记 |
+| Breakfast / Lunch / Dinner / Snack | 早餐／午餐／晚餐／點心 | 早餐／午餐／晚餐／点心 |
+| Nutrition / Estimate | 營養／估算 | 营养／估算 |
+| Mood journal | 心情日記 | 心情日记 |
+| Movement log / Baby movements / Session | 胎動紀錄／寶寶胎動／這次紀錄 | 胎动记录／宝宝胎动／本次记录 |
+| Health appointments / Appointment | 健康行程／行程 | 健康日程／日程 |
+| Prenatal visit | 產檢 | 产检 |
+| Due date / Pregnancy week | 預產期／孕週 | 预产期／孕周 |
+| Twins / One baby / Not sure yet | 雙胞胎／一個寶寶／還不確定 | 双胞胎／一个宝宝／还不确定 |
+| Profile / Nickname | 個人資料／暱稱 | 个人资料／昵称 |
+| Settings / Notifications / Reminder | 設定／通知／提醒 | 设置／通知／提醒 |
+| Save / Cancel / Edit / Delete / Done | 儲存／取消／編輯／刪除／完成 | 保存／取消／编辑／删除／完成 |
+| Discard changes / Keep editing | 捨棄變更／繼續編輯 | 放弃更改／继续编辑 |
+
 ## §4 「做完」怎麼驗（憲法 1 的細節）
 
 - `node tools/shot.mjs [--demo] [--dark] [--full] [--click "按鈕文字"] home meals/new …`（路由不加開頭斜線）

@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react';
 import { useUp } from '@/app/nav';
+import { tr } from '@/i18n';
+import { common } from '@/i18n/common';
 import { Icon, type IconName } from './Icon';
 import { cx } from './cx';
 
@@ -10,7 +12,7 @@ export function RecordHeader({ title, onBack, fallback, trailing }: { title: str
   const up = useUp(fallback);
   return (
     <header className="flex h-15 shrink-0 items-center gap-2 rounded-16 bg-bg-surface p-4">
-      <button type="button" aria-label="Back" onClick={onBack ?? up} className="-m-1 p-1 text-icon-default">
+      <button type="button" aria-label={tr(common).back} onClick={onBack ?? up} className="-m-1 p-1 text-icon-default">
         <Icon name="Back" />
       </button>
       <h1 className="min-w-0 flex-1 truncate type-heading-medium text-text-primary">{title}</h1>

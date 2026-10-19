@@ -1,17 +1,20 @@
 // Reminder options and labels — one source for appointments (09-S3 / 09-S4) and settings (11-8 defaults).
 // The data model stores a single Reminder: "1 hour" + "1 day" combine into the 1d+1h preset, the rest are exclusive.
+import { tr } from '@/i18n';
+import { common } from '@/i18n/common';
 import type { Reminder } from './types';
 
-const PRESET_LABEL = { '1h': '1 hour before', '1d': '1 day before', '1d+1h': '1 day & 1 hour before' } as const;
+const PRESET_KEY = { '1h': 'hourBefore', '1d': 'dayBefore', '1d+1h': 'dayAndHourBefore' } as const;
 
 export type ReminderOptionKey = 'none' | 'start' | 'hour' | 'day' | 'custom';
-export const REMINDER_OPTIONS: { key: ReminderOptionKey; label: string }[] = [
-  { key: 'none', label: 'No reminder' },
-  { key: 'start', label: 'At start time' },
-  { key: 'hour', label: '1 hour before' },
-  { key: 'day', label: '1 day before' },
-  { key: 'custom', label: 'Custom reminder' },
-];
+const OPTION_KEY = { none: 'noReminder', start: 'atStartTime', hour: 'hourBefore', day: 'dayBefore', custom: 'customReminder' } as const;
+/** `label` is a getter: it follows the active language. */
+export const REMINDER_OPTIONS: { key: ReminderOptionKey; readonly label: string }[] = (Object.keys(OPTION_KEY) as ReminderOptionKey[]).map((key) => ({
+  key,
+  get label() {
+    return tr(common)[OPTION_KEY[key]];
+  },
+}));
 
 export function isOptionSelected(r: Reminder, o: ReminderOptionKey): boolean {
   switch (o) {
@@ -45,15 +48,17 @@ export function splitMinutes(total: number): { amount: number; unit: ReminderUni
   if (total > 0 && total % 60 === 0) return { amount: total / 60, unit: 'hours' };
   return { amount: total, unit: 'minutes' };
 }
-const plural = (n: number, unit: string) => `${n} ${n === 1 ? unit : `${unit}s`}`;
-/** "2 hours before" / "At start time" / preset labels. */
+/** "2 hours before" / "At start time" / preset labels, in the active language. */
 export function reminderText(r: Reminder): string {
-  if (r.kind === 'none') return 'No reminder';
-  if (r.kind === 'preset') return PRESET_LABEL[r.preset];
-  if (r.minutesBefore === 0) return 'At start time';
+  const t = tr(common);
+  if (r.kind === 'none') return t.noReminder;
+  if (r.kind === 'preset') return t[PRESET_KEY[r.preset]];
+  if (r.minutesBefore === 0) return t.atStartTime;
   const { amount, unit } = splitMinutes(r.minutesBefore);
-  return `${plural(amount, unit.slice(0, -1))} before`;
+  return { minutes: t.minutesBefore, hours: t.hoursBefore, days: t.daysBefore }[unit](amount);
 }
 /** 09-S4 sentence: "Remind me 2 hours before the appointment." */
-export const customSentence = (amount: number, unit: ReminderUnit) => `Remind me ${plural(amount, unit.slice(0, -1))} before the appointment.`;
+export const customSentence = (amount: number, unit: ReminderUnit) => tr(common).remindMe(amount, unit);
+/** Unit chip labels for the custom reminder (Minutes / Hours / Days). */
+export const unitLabel = (unit: ReminderUnit) => tr(common)[({ minutes: 'unitMinutes', hours: 'unitHours', days: 'unitDays' } as const)[unit]];
 

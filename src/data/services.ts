@@ -159,11 +159,12 @@ export const settingsService = {
   async get(): Promise<Settings> {
     const saved = await settingsDoc.get();
     const d = defaultNotifications();
-    if (!saved) return { notifications: d, theme: 'system' };
+    if (!saved) return { notifications: d, theme: 'system', language: 'system' };
     // Older saves may miss fields added later (meals.enabled, appointments.defaultReminder): fill from defaults.
     const n = saved.notifications;
     return {
       ...saved,
+      language: saved.language ?? 'system', // saves from before languages existed
       notifications: { ...d, ...n, meals: { ...d.meals, ...n.meals }, appointments: { ...d.appointments, ...n.appointments } },
     };
   },

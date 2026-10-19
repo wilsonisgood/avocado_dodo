@@ -1,3 +1,4 @@
+import { LanguagePicker } from './LanguagePicker';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useQueryClient } from '@tanstack/react-query';
@@ -58,6 +59,9 @@ export function DevPage() {
   return (
     <RecordPage>
       <RecordHeader title="Playground" onBack={() => navigate('/')} />
+
+      <SectionHeader>Language</SectionHeader>
+      <LanguagePicker />
 
       <SectionHeader>Data</SectionHeader>
       <div className="flex flex-wrap gap-2">

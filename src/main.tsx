@@ -7,13 +7,15 @@ import { queryClient } from './data/queries';
 import { router } from './app/router';
 import { PhoneFrame } from './app/PhoneFrame';
 import { useApplyTheme } from './app/theme';
+import { useApplyLocale } from './app/locale';
 
 function App() {
   const theme = useApplyTheme();
-  // Re-mount on theme change so every <img src={asset(...)}> picks the matching vector set.
+  const locale = useApplyLocale();
+  // Re-mount on theme / language change: every asset path and every label is re-read.
   return (
     <PhoneFrame>
-      <RouterProvider key={theme} router={router} />
+      <RouterProvider key={`${theme}-${locale}`} router={router} />
     </PhoneFrame>
   );
 }

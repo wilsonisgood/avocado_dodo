@@ -1,4 +1,6 @@
 // Pure domain rules (no storage, no clock) — unit tested in rules.test.ts.
+import { tr } from '@/i18n';
+import { common } from '@/i18n/common';
 import type { Accessory, AccessoryId, ISODate, ISODateTime, PregnancyBasis, Rewards, TaskKey } from './types';
 
 // ---- dates -------------------------------------------------------------------------------------
@@ -36,11 +38,15 @@ export const dueDateFromAge = (weeks: number, days: number, today: ISODate) => a
 export const TASK_POINTS: Record<TaskKey, number> = { meal: 10, mood: 5, checkIn: 5 };
 export const DAILY_TASKS: TaskKey[] = ['meal', 'mood', 'checkIn'];
 
-export const ACCESSORIES: Accessory[] = [
-  { id: 'bow', title: 'Peach bow', price: 60 },
-  { id: 'leaf', title: 'Leaf hat', price: 'gift' },
-  { id: 'star', title: 'Star clip', price: 150 },
-];
+const ACC_KEY = { bow: 'accBow', leaf: 'accLeaf', star: 'accStar' } as const;
+const acc = (id: AccessoryId, price: Accessory['price']): Accessory => ({
+  id,
+  price,
+  get title() {
+    return tr(common)[ACC_KEY[id]]; // follows the active language
+  },
+});
+export const ACCESSORIES: Accessory[] = [acc('bow', 60), acc('leaf', 'gift'), acc('star', 150)];
 export const accessory = (id: AccessoryId) => ACCESSORIES.find((a) => a.id === id)!;
 
 /** Growth progress never drops when spending; 250 lifetime BP = 100% (LEDGER D-growth). */

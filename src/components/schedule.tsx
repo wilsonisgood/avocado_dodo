@@ -1,4 +1,7 @@
 import { addDays, parseISODate, toISODate } from '@/data/rules';
+import { tr } from '@/i18n';
+import { common } from '@/i18n/common';
+import { fmtDate, fmtMonthYear, weekdayNames } from '@/i18n/format';
 import type { ISODate, TimeOfDay } from '@/data/types';
 import { useRef, useState } from 'react';
 import { IconButton, SegmentedTabs } from './controls';
@@ -7,8 +10,6 @@ import { cx } from './cx';
 
 // "Nestly 行程共用元件": shared by appointments (09-2, 09-S5), profile (10-S3 due date) and settings (11-S2).
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /** First day of the month containing `date`. */
 export const monthOf = (date: ISODate): ISODate => `${date.slice(0, 7)}-01`;
@@ -16,10 +17,8 @@ export const shiftMonth = (month: ISODate, delta: number): ISODate => {
   const d = parseISODate(month);
   return toISODate(new Date(d.getFullYear(), d.getMonth() + delta, 1));
 };
-export const monthLabel = (month: ISODate) => {
-  const d = parseISODate(month);
-  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-};
+/** "October 2026" · "2026年10月" */
+export const monthLabel = (month: ISODate) => fmtMonthYear(month);
 
 /** Sunday-first weeks covering the month, including the leading/trailing days of the neighbours. */
 export function monthGrid(month: ISODate): ISODate[][] {
@@ -59,12 +58,12 @@ export function MonthCalendar({
   return (
     <div className={cx('flex flex-col gap-2 rounded-16 bg-bg-surface p-4', className)}>
       <div className="flex items-center gap-2">
-        <IconButton icon="Back" label="Previous month" className="h-11 w-10" onClick={() => onMonthChange(shiftMonth(m, -1))} />
+        <IconButton icon="Back" label={tr(common).prevMonth} className="h-11 w-10" onClick={() => onMonthChange(shiftMonth(m, -1))} />
         <p className="flex-1 text-center type-heading-small text-text-primary">{monthLabel(m)}</p>
-        <IconButton icon="ChevronRight" label="Next month" className="h-11 w-10" onClick={() => onMonthChange(shiftMonth(m, 1))} />
+        <IconButton icon="ChevronRight" label={tr(common).nextMonth} className="h-11 w-10" onClick={() => onMonthChange(shiftMonth(m, 1))} />
       </div>
       <div className="flex gap-1">
-        {WEEKDAYS.map((w) => (
+        {weekdayNames().map((w) => (
           <span key={w} className="flex-1 text-center type-caption-default text-text-secondary">
             {w}
           </span>
@@ -102,11 +101,8 @@ export function MonthCalendar({
   );
 }
 
-/** "Oct 27, 2026" */
-export const formatDateLong = (date: ISODate) => {
-  const d = parseISODate(date);
-  return `${MONTHS[d.getMonth()].slice(0, 3)} ${d.getDate()}, ${d.getFullYear()}`;
-};
+/** "Oct 27, 2026" · "2026年10月27日" */
+export const formatDateLong = (date: ISODate) => fmtDate(date);
 
 const clampInt = (raw: string, max: number) => {
   const n = Number.parseInt(raw.replace(/\D/g, '').slice(0, 2), 10);
@@ -135,13 +131,13 @@ export function TimeFields({
   return (
     <div className="flex flex-col gap-4">
       {title && <h2 className="type-heading-small text-text-primary">{title}</h2>}
-      <LabeledField label="hours">
-        <FieldControl inputMode="numeric" aria-label="hours" value={pad2(h)} onChange={(e) => onChange(`${pad2(clampInt(e.target.value, 23))}:${pad2(m)}`)} />
+      <LabeledField label={tr(common).hours}>
+        <FieldControl inputMode="numeric" aria-label={tr(common).hours} value={pad2(h)} onChange={(e) => onChange(`${pad2(clampInt(e.target.value, 23))}:${pad2(m)}`)} />
       </LabeledField>
-      <LabeledField label="minutes">
-        <FieldControl inputMode="numeric" aria-label="minutes" value={pad2(m)} onChange={(e) => onChange(`${pad2(h)}:${pad2(clampInt(e.target.value, 59))}`)} />
+      <LabeledField label={tr(common).minutes}>
+        <FieldControl inputMode="numeric" aria-label={tr(common).minutes} value={pad2(m)} onChange={(e) => onChange(`${pad2(h)}:${pad2(clampInt(e.target.value, 59))}`)} />
       </LabeledField>
-      <p className="type-body-default text-text-secondary">Selected: {value} (24-hour time)</p>
+      <p className="type-body-default text-text-secondary">{tr(common).selectedTime24(value)}</p>
     </div>
   );
 }
@@ -156,16 +152,16 @@ function TimeFieldsRow({ h, m, value, onChange }: { h: number; m: number; value:
   };
   return (
     <div className="flex flex-col gap-3">
-      <SegmentedTabs options={[{ value: 'hours', label: 'hours' }, { value: 'minutes', label: 'minutes' }]} value={tab} onChange={pick} />
+      <SegmentedTabs options={[{ value: 'hours', label: tr(common).hours }, { value: 'minutes', label: tr(common).minutes }]} value={tab} onChange={pick} />
       <div className="flex items-center gap-3">
-        <LabeledField label="Hour (00–23)" className="flex-1">
-          <FieldControl ref={hours} inputMode="numeric" aria-label="hours" value={pad2(h)} onFocus={() => setTab('hours')} onChange={(e) => onChange(`${pad2(clampInt(e.target.value, 23))}:${pad2(m)}`)} />
+        <LabeledField label={tr(common).hourRange} className="flex-1">
+          <FieldControl ref={hours} inputMode="numeric" aria-label={tr(common).hours} value={pad2(h)} onFocus={() => setTab('hours')} onChange={(e) => onChange(`${pad2(clampInt(e.target.value, 23))}:${pad2(m)}`)} />
         </LabeledField>
-        <LabeledField label="Minute (00–59)" className="flex-1">
-          <FieldControl ref={minutes} inputMode="numeric" aria-label="minutes" value={pad2(m)} onFocus={() => setTab('minutes')} onChange={(e) => onChange(`${pad2(h)}:${pad2(clampInt(e.target.value, 59))}`)} />
+        <LabeledField label={tr(common).minuteRange} className="flex-1">
+          <FieldControl ref={minutes} inputMode="numeric" aria-label={tr(common).minutes} value={pad2(m)} onFocus={() => setTab('minutes')} onChange={(e) => onChange(`${pad2(h)}:${pad2(clampInt(e.target.value, 59))}`)} />
         </LabeledField>
       </div>
-      <p className="type-heading-small text-text-primary">Selected: {value}</p>
+      <p className="type-heading-small text-text-primary">{tr(common).selectedTime(value)}</p>
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { fruitImages } from '@/data/fruitImages';
 import type { AccessoryId } from '@/data/types';
+import { tr } from '@/i18n';
+import { common } from '@/i18n/common';
 import { cx } from './cx';
 
 const base = import.meta.env.BASE_URL;
@@ -33,7 +35,7 @@ export function FruitCompanion({ week, accessory, size = 164, className }: { wee
   const box = size === 'fill' ? { width: '100%', aspectRatio: '1' } : { width: size, height: size };
   return (
     <div className={cx('relative', className)} style={box}>
-      <img src={fruitImageForWeek(week)} alt="Your fruit baby" className="size-full object-contain" />
+      <img src={fruitImageForWeek(week)} alt={tr(common).fruitAlt} className="size-full object-contain" />
       {accessory && (
         <img
           src={asset(`assets/accessories/${accessory}.svg`)}
@@ -52,7 +54,7 @@ export function CompanionProgress({ percent, caption, className }: { percent: nu
   return (
     <div className={cx('flex flex-col gap-2', className)}>
       <div className="flex items-center gap-2">
-        <span className="flex-1 type-label-default text-text-primary">Growth progress</span>
+        <span className="flex-1 type-label-default text-text-primary">{tr(common).growthProgress}</span>
         <span className="type-heading-medium text-text-brand">{p}%</span>
       </div>
       <div className="h-2 rounded-999 bg-bg-canvas" role="progressbar" aria-valuenow={p} aria-valuemin={0} aria-valuemax={100}>
@@ -63,13 +65,20 @@ export function CompanionProgress({ percent, caption, className }: { percent: nu
   );
 }
 
-const moods = {
-  happy: { emoji: '🙂', label: 'Happy' },
-  calm: { emoji: '😐', label: 'Calm' },
-  sad: { emoji: '😢', label: 'Sad' },
-  tired: { emoji: '😴', label: 'Tired' },
-  worried: { emoji: '😟', label: 'Worried' },
-} as const;
+const MOOD_KEY = { happy: 'moodHappy', calm: 'moodCalm', sad: 'moodSad', tired: 'moodTired', worried: 'moodWorried' } as const;
+const EMOJI = { happy: '🙂', calm: '😐', sad: '😢', tired: '😴', worried: '😟' } as const;
+/** `label` is a getter so it follows the active language. */
+const moods = Object.fromEntries(
+  (Object.keys(EMOJI) as (keyof typeof EMOJI)[]).map((k) => [
+    k,
+    {
+      emoji: EMOJI[k],
+      get label() {
+        return tr(common)[MOOD_KEY[k]];
+      },
+    },
+  ]),
+) as { [K in keyof typeof EMOJI]: { emoji: string; readonly label: string } };
 export type MoodKind = keyof typeof moods;
 export const moodMeta = moods;
 
