@@ -1,4 +1,7 @@
 import { dueDateFromAge, pregnancyAge } from '@/data/rules';
+import { tr } from '@/i18n';
+import { fmtDateNumeric } from '@/i18n/format';
+import { messages } from './i18n';
 import type { BabyCount, ISODate, Profile } from '@/data/types';
 
 export const NICKNAME_MAX = 20;
@@ -11,7 +14,7 @@ export type PregnancyForm = { babyCount: BabyCount; source: WeekSource; dueDate:
 /** Nickname rule of 10-1 / 10-S2: 1–20 characters after trimming. */
 export const nicknameError = (v: string) => {
   const n = v.trim().length;
-  return n >= 1 && n <= NICKNAME_MAX ? undefined : 'Enter a nickname with 1–20 characters';
+  return n >= 1 && n <= NICKNAME_MAX ? undefined : tr(messages).nicknameError;
 };
 
 /** Profile → form. A manual basis shows the due date it implies today (it is not stored). */
@@ -25,12 +28,12 @@ export function pregnancyToForm(p: Pick<Profile, 'babyCount' | 'pregnancy'>, tod
 const toInt = (s: string) => (/^\d{1,2}$/.test(s.trim()) ? Number.parseInt(s, 10) : NaN);
 
 export function pregnancyErrors(f: PregnancyForm): { dueDate?: string; weeks?: string; days?: string } {
-  if (f.source === 'dueDate') return f.dueDate ? {} : { dueDate: 'Choose a due date' };
+  if (f.source === 'dueDate') return f.dueDate ? {} : { dueDate: tr(messages).chooseDue };
   const w = toInt(f.weeks);
   const d = toInt(f.days);
   return {
-    weeks: w >= 0 && w <= MAX_WEEKS ? undefined : `Enter 0–${MAX_WEEKS}`,
-    days: d >= 0 && d <= 6 ? undefined : 'Enter 0–6',
+    weeks: w >= 0 && w <= MAX_WEEKS ? undefined : tr(messages).enterRange(MAX_WEEKS),
+    days: d >= 0 && d <= 6 ? undefined : tr(messages).enterDays,
   };
 }
 export const pregnancyValid = (f: PregnancyForm) => Object.values(pregnancyErrors(f)).every((e) => !e);
@@ -70,7 +73,7 @@ const num = (s: string) => {
 export function bodyErrors(f: BodyForm): Partial<Record<keyof BodyForm, string>> {
   const bad = (v: string, required: boolean) => {
     const n = num(v);
-    return Number.isNaN(n) || (required && n === undefined) ? 'Enter a number' : undefined;
+    return Number.isNaN(n) || (required && n === undefined) ? tr(messages).enterNumber : undefined;
   };
   return { height: bad(f.height, true), pre: bad(f.pre, false), current: bad(f.current, true), waist: bad(f.waist, false) };
 }
@@ -85,14 +88,14 @@ export const bodyToPatch = (f: BodyForm, today: ISODate): Profile['body'] => ({
 export const isSameBody = (a: BodyForm, b: BodyForm) => a.height === b.height && a.pre === b.pre && a.current === b.current && a.waist === b.waist;
 
 // ---- display ------------------------------------------------------------------------------------
-export const babyLabel = (c: BabyCount) => (c === 'twins' ? 'Twins' : c === 'one' ? 'One baby' : 'Not sure yet');
-export const ageLabel = (age: { weeks: number; days: number } | null) => (age ? `${age.weeks} weeks ${age.days} days` : '—');
+export const babyLabel = (c: BabyCount) => (c === 'twins' ? tr(messages).twins : c === 'one' ? tr(messages).oneBaby : tr(messages).notSure);
+export const ageLabel = (age: { weeks: number; days: number } | null) => (age ? tr(messages).ageLabel(age.weeks, age.days) : '—');
 /** 2027/06/27 as on the 07.Personal summary. */
-export const slashDate = (d: ISODate) => d.replaceAll('-', '/');
+export const slashDate = fmtDateNumeric;
 export const profileDue = (p: Pick<Profile, 'pregnancy'>, today: ISODate): ISODate | undefined => {
   const age = pregnancyAge(p.pregnancy, today);
   return p.pregnancy?.kind === 'dueDate' ? p.pregnancy.dueDate : age ? dueDateFromAge(age.weeks, age.days, today) : undefined;
 };
-export const cm = (n?: number) => (n === undefined ? '—' : `${n} cm`);
-export const kg = (n?: number) => (n === undefined ? '—' : `${n} kg`);
+export const cm = (n?: number) => (n === undefined ? '—' : `${n} ${tr(messages).cmUnit}`);
+export const kg = (n?: number) => (n === undefined ? '—' : `${n} ${tr(messages).kgUnit}`);
 
