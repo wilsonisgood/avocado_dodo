@@ -4,6 +4,8 @@ import { Button, RecordHeader, RecordMetric, RecordPage, RecordRow, SectionHeade
 import { keys, useAction, useActiveMovement } from '@/data/queries';
 import { movementService } from '@/data/services';
 import type { MovementSession } from '@/data/types';
+import { useT } from '@/i18n';
+import { messages } from './i18n';
 import { MovementNotice, useBack } from './shared';
 import { countLabel, dateLong, elapsedMs, formatElapsed, hm } from './time';
 
@@ -15,23 +17,25 @@ export function MovementPage() {
 }
 
 function Start() {
+  const t = useT(messages);
   const navigate = useNavigate();
   const back = useBack();
   const start = useAction(movementService.start, [keys.movements]);
   return (
     <RecordPage>
-      <RecordHeader title="Movement log" onBack={back} />
-      <SectionHeader>Notice baby's usual pattern</SectionHeader>
-      <p className="type-body-default text-text-secondary">Tap once for each movement you feel. This log has no daily target.</p>
+      <RecordHeader title={t.movementLog} onBack={back} />
+      <SectionHeader>{t.usualPattern}</SectionHeader>
+      <p className="type-body-default text-text-secondary">{t.startIntro}</p>
       <MovementNotice />
-      <Button block onClick={() => start.mutate([])}>Start a session</Button>
-      <Button block variant="outline" onClick={() => navigate('/movement/history')}>View history</Button>
-      <RecordRow title="Expecting twins?" detail="Log what you feel overall, even if you can't identify which baby moved. Follow your care team's guidance." />
+      <Button block onClick={() => start.mutate([])}>{t.startSession}</Button>
+      <Button block variant="outline" onClick={() => navigate('/movement/history')}>{t.viewHistory}</Button>
+      <RecordRow title={t.twinsTitle} detail={t.twinsBody} />
     </RecordPage>
   );
 }
 
 function Recording({ session }: { session: MovementSession }) {
+  const t = useT(messages);
   const navigate = useNavigate();
   const back = useBack();
   const [now, setNow] = useState(() => Date.now());
@@ -53,16 +57,16 @@ function Recording({ session }: { session: MovementSession }) {
 
   return (
     <RecordPage>
-      <RecordHeader title="Log movements" onBack={back} />
-      <p className="type-label-default text-text-secondary">{paused ? 'Paused · Timer stopped' : `Recording · ${dateLong(started)} · ${hm(started)}`}</p>
-      <RecordMetric label="Movements this session" value={countLabel(count)} detail={`Elapsed ${formatElapsed(elapsedMs(session, now))} · Movements may come and go`} />
+      <RecordHeader title={t.logMovements} onBack={back} />
+      <p className="type-label-default text-text-secondary">{paused ? t.pausedStatus : t.recording(dateLong(started), hm(started))}</p>
+      <RecordMetric label={t.metricLabel} value={countLabel(count)} detail={t.elapsedDetail(formatElapsed(elapsedMs(session, now)))} />
       {paused ? (
-        <Button block onClick={() => resume.mutate([id])}>Resume</Button>
+        <Button block onClick={() => resume.mutate([id])}>{t.resume}</Button>
       ) : (
-        <Button block icon="Plus" onClick={() => tap.mutate([id])}>Movement ＋1</Button>
+        <Button block icon="Plus" onClick={() => tap.mutate([id])}>{t.addMovement}</Button>
       )}
-      <Button block variant="outline" disabled={count === 0} onClick={() => undo.mutate([id])}>Undo last</Button>
-      {!paused && <Button block variant="outline" icon="Pause" onClick={() => pause.mutate([id])}>Pause</Button>}
+      <Button block variant="outline" disabled={count === 0} onClick={() => undo.mutate([id])}>{t.undoLast}</Button>
+      {!paused && <Button block variant="outline" icon="Pause" onClick={() => pause.mutate([id])}>{t.pause}</Button>}
       <Button
         block
         variant="outline"
@@ -71,7 +75,7 @@ function Recording({ session }: { session: MovementSession }) {
           navigate(`/movement/review/${id}`, { replace: true });
         }}
       >
-        Finish & review
+        {t.finishReview}
       </Button>
       <MovementNotice />
     </RecordPage>
