@@ -55,14 +55,24 @@ const num = (s: string) => {
   return s.trim() && Number.isFinite(n) && n > 0 ? n : undefined;
 };
 
+/** "19900101" or "1990-01-01" -> "1990-01-01"; anything else (or an impossible date) -> undefined. */
+export function birthDateFrom(dob: string): string | undefined {
+  const m = /^(\d{4})-?(\d{2})-?(\d{2})$/.exec(dob.trim());
+  if (!m) return undefined;
+  const [y, mo, d] = [+m[1], +m[2], +m[3]];
+  const date = new Date(y, mo - 1, d);
+  return date.getFullYear() === y && date.getMonth() === mo - 1 && date.getDate() === d ? `${m[1]}-${m[2]}-${m[3]}` : undefined;
+}
+
 /** Builds the patch for profileService.save. Unconfirmed keeps the entered week as the starting estimate. */
-export function toProfilePatch(d: Draft, setOn: string): Pick<Profile, 'nickname' | 'babyCount' | 'babyNames' | 'pregnancy' | 'body'> {
+export function toProfilePatch(d: Draft, setOn: string): Pick<Profile, 'nickname' | 'babyCount' | 'babyNames' | 'pregnancy' | 'body' | 'birthDate'> {
   const babyNames = d.babyCount === 'twins' ? [d.names[0].trim(), d.names[1].trim()] : [d.names[0].trim()];
   return {
     nickname: d.nickname.trim(),
     babyCount: d.babyCount,
     babyNames,
     pregnancy: pregnancyFrom(d, setOn),
+    birthDate: birthDateFrom(d.dob),
     body: { heightCm: num(d.height), currentWeightKg: num(d.weight), waistCm: num(d.waist), updatedOn: setOn },
   };
 }

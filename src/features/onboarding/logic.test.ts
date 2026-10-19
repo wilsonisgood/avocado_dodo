@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { emptyDraft, nicknameError, parseIntIn, toProfilePatch, daysError, weeksError } from './logic';
+import { birthDateFrom, emptyDraft, nicknameError, parseIntIn, toProfilePatch, daysError, weeksError } from './logic';
 
 describe('onboarding logic', () => {
   it('rejects blank nickname', () => {
@@ -27,5 +27,14 @@ describe('onboarding logic', () => {
     const p = toProfilePatch(d, '2026-10-19');
     expect(p.babyNames).toEqual(['A', '']);
     expect(p.pregnancy).toBeNull();
+  });
+});
+
+describe('birthDateFrom', () => {
+  it('accepts compact and dashed dates, rejects impossible ones', () => {
+    expect(birthDateFrom('19900101')).toBe('1990-01-01');
+    expect(birthDateFrom('1990-01-31')).toBe('1990-01-31');
+    expect(birthDateFrom('19900231')).toBeUndefined();
+    expect(birthDateFrom('')).toBeUndefined();
   });
 });

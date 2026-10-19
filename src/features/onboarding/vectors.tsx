@@ -65,7 +65,7 @@ const FIELD_ICONS = { height: HEIGHT, weight: WEIGHT };
 
 /** 16px muted icon at the left inside a FieldControl (02). */
 export function FieldIcon({ kind }: { kind: 'height' | 'weight' | 'waist' }) {
-  const cls = 'pointer-events-none absolute left-3 top-2.5';
+  const cls = 'pointer-events-none absolute left-3 top-1/2 -translate-y-1/2';
   if (kind === 'waist') {
     return (
       <span className={`${cls} flex size-4 items-center justify-center rounded-999 border border-icon-muted text-text-muted`} aria-hidden>
