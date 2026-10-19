@@ -30,6 +30,16 @@
 | D-unconfirmed | onboarding 選「Not sure yet」仍存使用者填的孕週（設計稿 03-3 有這兩欄），之後在 Profile 可改 | 照 03-3 畫面；首頁才有週數可顯示 | |
 | D-birth | 生日存進 `Profile.birthDate`，年齡不存（由生日算） | 02 有這兩欄；存年齡會過期 | |
 | D-glyph | records 餐點縮圖只用色塊，拿掉上面那層字 | 設計稿那層是把「&#26089;」「&#21320;」（被 HTML 跳脫的「早」「午」）轉成外框的向量，是匯入錯誤；介面是英文，晚餐／點心也沒有定義 | |
+| D-checkin | 每日簽到 +5：每天第一次打開分頁時自動領（`app/layouts.tsx`），任務頁只顯示 | 設計稿只寫「Checked in today」，沒有簽到按鈕 | |
+| D-reminders | 提醒在資料裡只存一個值：「1 小時前」＋「1 天前」合成 1d+1h，「At start time」= 自訂 0 分鐘，其他互斥；產檢與設定 11-8 共用 `@/data/reminders` | 設計稿畫成可多選，但兩個選項以上的組合只有這一種 | |
+| D-default-reminder | 新增產檢時，提醒預設值讀設定 11-8 的「Default for new appointments」（預設 1 天＋1 小時前） | 11-8 寫明「Applies to new appointments only」 | |
+| D-time24 | 所有時間輸入都用共用 `TimeFields`（24 小時制）：產檢用直排（09-S6），設定與飲食用並排（11-S2） | 瀏覽器原生時間欄位在英文環境會顯示 AM/PM，設計稿全是 24 小時制 | |
+| D-10S1 | 個人頁的「放棄變更」做成整頁，其他模組是浮動對話框 | 設計稿 10-S1 本身就是獨立整頁（有標題列、沒有遮罩） | |
+| D-home | 首頁：Baby's note 連到任務頁；孕期時間軸只用設計稿的 Weeks 0–13 三項並標註週數範圍；水果名稱只在第 4 週顯示「avocado size」；星座標籤不做 | 設計稿沒有對應畫面或資料來源，⛔ 自己編醫療／內容 | |
+| D-copy | 子任務自擬的介面短句（按鈕：Claimed、Buy now／Not now、Earn points；未完成任務說明「Log your mood to earn 5 BP」；產檢欄位 placeholder）| 設計稿只畫了已完成狀態、沒給按鈕字；都是操作說明，不涉及醫療內容。要改請直接說 | |
+| D-placeholder | 樹葉帽、星星夾的介紹，以及個人頁的寶寶名字建議，設計稿沒有內容 → 顯示 `[Placeholder]` 或不動作 | 不自己編文案 | |
+| D-a11y | 共用 `LabeledField` 改成 `<label>` 包住欄位 | 原本標籤跟欄位沒關聯，讀螢幕軟體讀不到；e2e 測試抓到的 | |
+| D-pages-ci | 準備好 GitHub Actions 部署設定（`.github/workflows/deploy.yml`），build 後發布 `dist/` | 使用者要放 GitHub Pages；push 與開啟 Pages 由使用者做 | |
 | D-git | 本機 git，`.fig` 原檔一起 commit（19MB）；`design/spec`、`public/assets` 由工具重產，前者不進 git | `.fig` 是唯一真相來源；spec 可隨時 `npm run fig` 重產 | |
 
 **上線前要使用者確認**：設計素材（水果寶寶插圖、圖示）是作者的 UI Kit，公開放上 GitHub Pages 前需要作者同意授權。push 和部署由使用者自己做。
@@ -52,6 +62,8 @@
 | 2026-10-18 | 規則單元測試 | 7 項全過 |
 | 2026-10-19 | 第一批 4 個模組（sonnet，平行 worktree） | 實際／預算：onboarding 22/45（含一次修正）、飲食 14/60、胎動 18/55、心情 14/50 ⇒ 平均約 30% |
 | 2026-10-19 | 合併後 main | 30 項測試全過、build 過、各模組截圖 console 0 error、重新整理後資料都還在 |
+| 2026-10-19 | 第二批 7 個模組（6 sonnet＋1 opus，平行） | 實際／預算：產檢列表 9/22、產檢表單 14/26、records 11/18、個人頁 21/26、設定 27/24（含一次補強）、任務商店 24/30（opus）、首頁 16/22 ⇒ 平均約 70%，估算表打 4 折後準了 |
+| 2026-10-19 | 全部合併後 | 84 項單元測試、全站巡檢 48 條路由 0 問題、端到端主線 6 步全過、GitHub Pages 子路徑模擬 0 個 404 |
 
 ## Figma 額度
 

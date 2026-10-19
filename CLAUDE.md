@@ -3,7 +3,7 @@
 - **主 session**：開工前先讀 [AGENT.md](AGENT.md)（subagent 調度：何時派工、選 model、怎麼切任務、輪數預算）。
 - **subagent**：不用讀 AGENT.md，照派工 prompt 做就好。
 
-**狀態**：active，地基完成（2026-10-18），接著做各模組。設計來源是 `design/` 裡的 `.fig` 原檔（Nestly — Pregnancy & Baby Companion UI Kit）。
+**狀態**：active。11 個模組全部完成並合併（2026-10-19）；剩細修與部署（使用者 push）。設計來源是 `design/` 裡的 `.fig` 原檔（Nestly — Pregnancy & Baby Companion UI Kit）。
 技術棧：React + Vite + TypeScript + Tailwind；範圍方案 A（全模組可互動）；最後放 GitHub Pages（使用者自己部署）。資料先存在瀏覽器，但**一定要留好之後接 API 的路**（METHOD §2）。
 
 ## 1. 開工先讀（≤ 3 份，每份 ≤ 200 行）

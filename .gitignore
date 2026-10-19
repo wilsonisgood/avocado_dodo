@@ -9,3 +9,4 @@ shots/
 .claude/worktrees/
 /.cache
 /.tmp
+/.npm-ci-cache

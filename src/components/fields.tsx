@@ -66,11 +66,12 @@ export function TextArea({ className, ...rest }: TextareaHTMLAttributes<HTMLText
 
 /** Nestly/ScheduleField: Caption/Strong label above any control (FieldControl, picker button…). */
 export function LabeledField({ label, children, className }: { label: string; children: ReactNode; className?: string }) {
+  // <label> wrapping the control associates the two (screen readers, getByLabel); buttons inside still work.
   return (
-    <div className={cx('flex flex-col gap-2', className)}>
+    <label className={cx('flex flex-col gap-2', className)}>
       <span className="type-caption-strong text-text-primary">{label}</span>
       {children}
-    </div>
+    </label>
   );
 }
 

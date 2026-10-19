@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "test": "vitest run",
     "fig": "node tools/fig/decode.mjs && node tools/fig/spec.mjs && node tools/fig/tokens.mjs && node tools/fig/assets.mjs",
-    "shot": "node tools/shot.mjs"
+    "shot": "node tools/shot.mjs",
+    "smoke": "node tools/smoke.mjs",
+    "e2e": "node tools/e2e.mjs",
+    "check": "tsc -p . && vitest run && vite build && node tools/smoke.mjs && node tools/e2e.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",
