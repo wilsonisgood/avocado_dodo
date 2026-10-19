@@ -78,7 +78,7 @@ avocado/
 | English | 繁體中文 | 简体中文 |
 |---|---|---|
 | Fruit baby | 水果寶寶 | 水果宝宝 |
-| BP（點數） | BP | BP |
+| BP / points | BP／點數 | BP／积分 |
 | Growth progress | 成長進度 | 成长进度 |
 | Daily tasks / Daily check-in | 每日任務／每日簽到 | 每日任务／每日签到 |
 | Baby shop / Accessories | 寶寶商店／飾品 | 宝宝商店／饰品 |

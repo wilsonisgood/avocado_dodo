@@ -84,6 +84,8 @@
   ≥ 2 個模組會用到的元件、格式化函式、標籤文字，主 session 先做進 `src/components`／`src/data`，寫進 playground，再派。
   同一模組要拆給兩個任務時，先拆成子資料夾（例：`appointments/list/`、`appointments/form/`），各自擁有，
   **而且這兩個任務之間共用的東西也要先抽**（2026-10-19：Nestly/ScheduleCard 被兩邊各做一份，事後才合併）。
+- **翻譯／文案類任務先補齊術語表**：所有任務都會碰到的領域詞（例：打針、抽血、care team、kcal）派工前就寫進 METHOD §3c；
+  2026-10-19 漏了這幾個，十個任務翻出三四種說法，合併時才統一。
 - **檔案不重疊**：每個模組任務只擁有 `src/features/<模組>/`。共用檔（`src/components/`、`src/data/` 的介面、
   路由註冊、`App.tsx`、`package.json`、色票）走整合事項。
 - **跨模組的連動**（任務 ↔ 飲食／心情／胎動 ↔ 點數 ↔ 商店 ↔ 首頁）：模組只呼叫地基定好的介面，

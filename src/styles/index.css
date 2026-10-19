@@ -38,5 +38,4 @@ button {
 }
 @media (prefers-reduced-motion: no-preference) {
   .fruit-float { animation: fruit-float 4s ease-in-out infinite; }
-  .fruit-float-delay { animation-delay: -2s; }
 }

@@ -1,6 +1,6 @@
 // Whole-app smoke test: load demo data, visit every route (including each record's detail / edit page),
 // fail on console errors, failed requests, or leftover "Not built yet" placeholders.
-//   node tools/smoke.mjs            (exit 1 on any problem)
+//   node tools/smoke.mjs [--lang zh-Hant|zh-Hans]   (exit 1 on any problem)
 import path from 'node:path';
 import fs from 'node:fs';
 import { createServer } from 'vite';
@@ -27,6 +27,7 @@ const PER_RECORD = {
   appointments: (id) => [`appointments/${id}`, `appointments/${id}/edit`],
 };
 
+const lang = process.argv.includes('--lang') ? process.argv[process.argv.indexOf('--lang') + 1] : null;
 const tag = path.basename(root);
 const server = await createServer({ root, logLevel: 'error', cacheDir: path.join(root, '.cache/vite', tag), server: { port: 0 } });
 await server.listen();
@@ -45,6 +46,14 @@ await page.goto(`${base}#/playground`);
 await page.evaluate(() => localStorage.clear());
 await page.getByRole('button', { name: 'Load demo data' }).click();
 await page.waitForURL(/#\/home/);
+if (lang) {
+  const names = { en: 'English', 'zh-Hant': '繁體中文', 'zh-Hans': '简体中文' };
+  await page.goto(`${base}#/playground`);
+  await page.getByRole('button', { name: names[lang], exact: true }).first().click();
+  await page.waitForTimeout(300);
+  await page.reload();
+  await page.waitForLoadState('networkidle');
+}
 
 const ids = await page.evaluate(() =>
   Object.fromEntries(['meals', 'moods', 'movements', 'appointments'].map((k) => [k, JSON.parse(localStorage.getItem(`nestly:v1:${k}`) ?? '[]').map((x) => x.id)])),
@@ -58,6 +67,9 @@ for (const route of routes) {
   await page.waitForTimeout(150);
   const text = await page.locator('#phone-screen').innerText();
   if (text.includes('Not built yet')) problems.push(`#/${route}: placeholder still shown`);
+  // In Chinese, the bottom navigation / headers must not fall back to English.
+  const leftover = lang && route !== 'playground' && /\b(Home|Records|Tasks|Profile|Back|Save|Cancel|Edit|Delete)\b/.exec(text);
+  if (leftover) problems.push(`#/${route}: English UI word "${leftover[0]}" left in ${lang} — …${text.slice(Math.max(0, leftover.index - 30), leftover.index + 30).replace(/\s+/g, ' ')}…`);
   if (!text.trim()) problems.push(`#/${route}: blank screen`);
   const landed = page.url().split('#/')[1] ?? '';
   if (landed.split('?')[0] !== route.split('?')[0]) problems.push(`#/${route}: redirected to #/${landed}`);
@@ -66,7 +78,7 @@ for (const route of routes) {
 await browser.close();
 await server.close();
 fs.rmSync(profile, { recursive: true, force: true });
-console.log(`smoke: ${routes.length} routes visited`);
+console.log(`smoke${lang ? ` [${lang}]` : ''}: ${routes.length} routes visited`);
 if (problems.length) {
   console.log(`\n${problems.length} problem(s):\n${[...new Set(problems)].join('\n')}`);
   process.exit(1);

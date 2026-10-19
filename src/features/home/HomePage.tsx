@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { Button, CompanionProgress, FieldControl, FruitCompanion, fruitImageForWeek, Icon, MoodChoice, asset, cx, type IconName, type MoodKind } from '@/components';
+import { Button, CompanionProgress, FieldControl, FloatingFruit, FruitCompanion, fruitImageForWeek, Icon, MoodChoice, asset, cx, type IconName, type MoodKind } from '@/components';
 import { appointmentTypeLabel, relativeDay, shortDateWithWeekday } from '@/data/labels';
 import { useActiveMovement, useAppointments, useMealsOn, useMoods, useMovements, useProfile, useRewards } from '@/data/queries';
 import { tr, useT } from '@/i18n';
@@ -46,15 +46,20 @@ function Header() {
         // Same box as the circle, clipped round: the fruit can float but never leaves the circle.
         <div className="absolute overflow-hidden rounded-full" style={CIRCLE} aria-hidden>
           <div className="absolute inset-x-0 flex items-center justify-center" style={{ top: '36%', bottom: 0 }}>
+            {/* FloatingFruit: random start spot, phase and speed on every visit (user request 2026-10-19). */}
             {twins ? (
               <div className="relative" style={{ width: '62%', aspectRatio: '1' }}>
-                <img src={fruitImageForWeek(week)} alt="" className="fruit-float absolute top-[30%] left-[4%] w-[60%] object-contain" style={{ rotate: '-32deg' }} />
-                <img src={fruitImageForWeek(week)} alt="" className="fruit-float fruit-float-delay absolute top-0 left-[34%] w-[60%] object-contain" style={{ rotate: '34deg' }} />
+                <FloatingFruit className="absolute top-[30%] left-[4%] w-[60%]" style={{ rotate: '-32deg' }}>
+                  <img src={fruitImageForWeek(week)} alt="" className="w-full object-contain" />
+                </FloatingFruit>
+                <FloatingFruit className="absolute top-0 left-[34%] w-[60%]" style={{ rotate: '34deg' }}>
+                  <img src={fruitImageForWeek(week)} alt="" className="w-full object-contain" />
+                </FloatingFruit>
               </div>
             ) : (
-              <div className="fruit-float" style={{ width: '46%' }}>
+              <FloatingFruit style={{ width: '46%' }}>
                 <FruitCompanion week={week} accessory={rewards?.equipped} size="fill" />
-              </div>
+              </FloatingFruit>
             )}
           </div>
         </div>
