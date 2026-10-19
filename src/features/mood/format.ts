@@ -1,26 +1,26 @@
 import type { Mood } from '@/data/types';
+import { fmtDate, fmtDateNumeric, fmtTime } from '@/i18n/format';
 
 // Pure helpers for the mood journal (07-*): date/time display, query param, dirty check.
 
 const pad = (n: number) => String(n).padStart(2, '0');
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const isoDate = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 export const MOOD_KINDS: Mood[] = ['happy', 'calm', 'sad', 'tired', 'worried'];
 
 /** "14:00" (local time). */
 export function formatTime(iso: string): string {
-  const d = new Date(iso);
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return fmtTime(iso);
 }
 
 /** "2026/03/11 · 14:00" (local time). */
 export function formatDateTime(iso: string): string {
   const d = new Date(iso);
-  return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} · ${formatTime(iso)}`;
+  return `${fmtDateNumeric(isoDate(d))} · ${formatTime(iso)}`;
 }
 
-/** "Mar 11, 2026" (local date). */
+/** "Mar 11, 2026" · "2026年3月11日" (local date). */
 export function formatDay(d: Date): string {
-  return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  return fmtDate(isoDate(d));
 }
 
 /** Validates the `?mood=` preselect; anything unknown gives undefined. */
