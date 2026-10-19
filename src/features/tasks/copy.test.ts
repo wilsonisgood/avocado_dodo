@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { buyAccessory, equipAccessory, initialRewards } from '@/data/rules';
 import type { Rewards } from '@/data/types';
+import { setLocale } from '@/i18n';
 import { cardFor, companionWeek, confirmPurchase, detailCopy, equipped, notEnough, purchased, removed, shopCards, taskRows, taskSummary } from './copy';
 
 const day = '2026-10-19';
@@ -59,5 +60,18 @@ describe('details and dialogs', () => {
     expect(equipped(afterBuy, 'bow')).toMatchObject({ metric: 'Looking lovely today', footnote: 'Free to equip · Balance 60 BP' });
     expect(equipped(demo, 'leaf')).toMatchObject({ metric: 'Leaf hat equipped', footnote: 'Welcome gift · Free to equip' });
     expect(removed(afterBuy, 'bow')).toMatchObject({ title: 'Bow removed', footnote: 'No refund · Balance 60 BP' });
+  });
+});
+
+describe('zh-Hant', () => {
+  afterEach(() => setLocale('en'));
+  it('follows the language for rows, cards and dialogs', () => {
+    setLocale('zh-Hant');
+    expect(taskRows(demo, day)[0]).toMatchObject({ title: '飲食紀錄', detail: '記錄一餐可獲得 10 BP', action: '＋10 BP' });
+    expect(taskSummary(demo, day).heading).toBe('今日任務 · 2/3');
+    expect(shopCards(demo, 'available').map((c) => c.status)).toEqual(['可購買', 'BP 不足']);
+    expect(confirmPurchase(demo, 'bow').footnote).toBe('餘額：120 → 60 BP\n成長進度維持在 72%');
+    expect(notEnough(demo, 'star').metric).toBe('還差 30 BP');
+    expect(removed(afterBuy, 'bow').title).toBe('已取下蝴蝶結');
   });
 });

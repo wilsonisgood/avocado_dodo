@@ -6,6 +6,8 @@ import { today } from '@/data/services';
 import type { AccessoryId } from '@/data/types';
 import type { Card, TaskRow } from './copy';
 import { companionWeek } from './copy';
+import { useT } from '@/i18n';
+import { messages } from './i18n';
 
 export function useCompanionWeek() {
   const profile = useProfile().data;
@@ -39,13 +41,14 @@ export function DailyTaskRow({ row, onAction }: { row: TaskRow; onAction?: () =>
 
 /** Nestly/Tasks/Progress (55:1978). */
 export function TasksProgress({ accessory, percent, caption, onShop }: { accessory: AccessoryId | null; percent: number; caption: string; onShop: () => void }) {
+  const t = useT(messages);
   return (
     <section className="flex flex-col gap-2 overflow-hidden rounded-24 bg-bg-soft p-4">
-      <h2 className="type-heading-small text-text-primary">My fruit baby</h2>
+      <h2 className="type-heading-small text-text-primary">{t.myFruit}</h2>
       <CompanionStage accessory={accessory} />
       <CompanionProgress percent={percent} caption={caption} />
       <Button block onClick={onShop}>
-        Baby shop
+        {t.babyShop}
       </Button>
     </section>
   );
