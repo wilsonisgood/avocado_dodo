@@ -1,11 +1,17 @@
 import type { ModuleRoutes } from '@/app/moduleRoutes';
-import { Placeholder } from '@/app/Placeholder';
+import { Notifications } from './Notifications';
+import { Permission } from './Permission';
+import { Reminder } from './Reminder';
+import { Settings } from './Settings';
 
-// Settings (11-*). Owned by the settings module task: replace the placeholders with real screens.
+// Settings (11-*).
 export const routes: ModuleRoutes = {
   tab: [
   ],
   stack: [
-    { path: 'settings', element: <Placeholder title="Settings" frames="11-*" /> },
+    { path: 'settings', element: <Settings /> },
+    { path: 'settings/notifications', element: <Notifications /> },
+    { path: 'settings/permission', element: <Permission /> },
+    { path: 'settings/reminders/:key', element: <Reminder /> },
   ],
 };
