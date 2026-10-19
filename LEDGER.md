@@ -29,6 +29,7 @@
 | D-dialogs | 設計稿的 *-S 整頁 frame（刪除、離開確認）實作成浮在畫面上的對話框 | 設計稿畫的就是「原畫面＋遮罩＋對話框」，用整頁會失去背景脈絡 | |
 | D-unconfirmed | onboarding 選「Not sure yet」仍存使用者填的孕週（設計稿 03-3 有這兩欄），之後在 Profile 可改 | 照 03-3 畫面；首頁才有週數可顯示 | |
 | D-birth | 生日存進 `Profile.birthDate`，年齡不存（由生日算） | 02 有這兩欄；存年齡會過期 | |
+| D-glyph | records 餐點縮圖只用色塊，拿掉上面那層字 | 設計稿那層是把「&#26089;」「&#21320;」（被 HTML 跳脫的「早」「午」）轉成外框的向量，是匯入錯誤；介面是英文，晚餐／點心也沒有定義 | |
 | D-git | 本機 git，`.fig` 原檔一起 commit（19MB）；`design/spec`、`public/assets` 由工具重產，前者不進 git | `.fig` 是唯一真相來源；spec 可隨時 `npm run fig` 重產 | |
 
 **上線前要使用者確認**：設計素材（水果寶寶插圖、圖示）是作者的 UI Kit，公開放上 GitHub Pages 前需要作者同意授權。push 和部署由使用者自己做。

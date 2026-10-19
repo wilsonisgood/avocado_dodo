@@ -25,7 +25,7 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 | M-4 | mood | 07-0～07-5、07-S1/S2 | sonnet 50 | — | ✅ 2026-10-19 合併（14/50 輪）|
 | M-5a | appointments 列表／月曆 | 09-0～09-2c、09-E0、09-R* | sonnet 55 | — | ✅ 2026-10-19 合併（9/22 輪）|
 | M-5b | appointments 新增／編輯／詳情 | 09-3～09-13、09-S* | sonnet 60 | —（拆成 list/ 與 form/ 後可平行） | 🔵 sonnet／26 輪，worktree `.claude/worktrees/appts-form`、分支 `feat/appts-form` |
-| M-6 | records（05.Health Record 彙整頁） | 05.Health Record | sonnet 40 | M-2、M-3、M-4 | 🔵 sonnet／18 輪，worktree `.claude/worktrees/records`、分支 `feat/records` |
+| M-6 | records（05.Health Record 彙整頁） | 05.Health Record | sonnet 40 | M-2、M-3、M-4 | ✅ 2026-10-19 合併（11/18 輪）|
 | M-7 | profile | 07.Personal、10-* | sonnet 60 | — | 🔵 sonnet／26 輪，worktree `.claude/worktrees/profile`、分支 `feat/profile` |
 | M-8 | settings | 11-* | sonnet 55 | — | 🔵 sonnet／24 輪，worktree `.claude/worktrees/settings`、分支 `feat/settings` |
 | M-9 | tasks／shop | 06.Task、12-*（51 個 frame，多數是點數狀態） | opus 70 | M-2、M-4 | 🔵 opus／30 輪，worktree `.claude/worktrees/tasks`、分支 `feat/tasks` |

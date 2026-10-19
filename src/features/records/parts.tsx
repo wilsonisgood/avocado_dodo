@@ -57,16 +57,15 @@ export function NutritionSummary({ totals, isToday }: { totals: NutritionTotals;
 
 function Thumb({ meal, index }: { meal: Meal; index: number }) {
   const { data: url } = usePhotoUrl(meal.photoIds[0] ?? '');
-  const [bg, fg] = index % 2 === 0 ? ['55-1900', '55-1901'] : ['55-1909', '55-1910'];
+  // The design's tile overlay (55-1901 / 55-1910) is the literal text "&#26089;" / "&#21320;" outlined into a vector
+  // (an HTML-escaped 早 / 午 from the designer's import), so only the coloured tile is used (LEDGER D-glyph).
+  const bg = index % 2 === 0 ? '55-1900' : '55-1909';
   return (
     <div className="relative size-14 shrink-0 overflow-hidden rounded-10">
       {meal.photoIds[0] && url ? (
         <img src={url} alt="" className="size-full object-cover" />
       ) : (
-        <>
-          <img src={asset(`assets/vectors/${bg}.svg`)} alt="" className="absolute inset-0 size-full" />
-          <img src={asset(`assets/vectors/${fg}.svg`)} alt="" className="absolute left-[9.61px] top-[24.32px] w-[36.75px]" />
-        </>
+        <img src={asset(`assets/vectors/${bg}.svg`)} alt="" className="absolute inset-0 size-full" />
       )}
     </div>
   );
