@@ -90,6 +90,7 @@ avocado/
 | Movement log / Baby movements / Session | 胎動紀錄／寶寶胎動／這次紀錄 | 胎动记录／宝宝胎动／本次记录 |
 | Health appointments / Appointment | 健康行程／行程 | 健康日程／日程 |
 | Prenatal visit | 產檢 | 产检 |
+| Injection / Blood test / Other health plans | 打針／抽血／其他健康行程 | 打针／抽血／其他健康日程 |
 | Due date / Pregnancy week | 預產期／孕週 | 预产期／孕周 |
 | Twins / One baby / Not sure yet | 雙胞胎／一個寶寶／還不確定 | 双胞胎／一个宝宝／还不确定 |
 | Profile / Nickname | 個人資料／暱稱 | 个人资料／昵称 |
