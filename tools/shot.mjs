@@ -59,6 +59,8 @@ if (lang) {
   await page.goto(`${base}#/playground`);
   await page.getByRole('button', { name: names[lang], exact: true }).first().click();
   await page.waitForTimeout(300);
+  await page.reload(); // make sure every screen is mounted in the new language
+  await page.waitForLoadState('networkidle');
 }
 
 fs.mkdirSync(path.join(root, 'shots'), { recursive: true });
