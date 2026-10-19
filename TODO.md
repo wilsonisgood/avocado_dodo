@@ -33,9 +33,14 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 
 每日簽到：每天第一次打開分頁時自動 +5（`app/layouts.tsx`，LEDGER D-checkin）。
 
+## 整合時要接的線（主 session）
+
+- M-5b 合併時：新增預約的提醒預設值讀 `settings.notifications.appointments.defaultReminder`（11-8）。
+- M-7 合併時：設定 11-0 的 Personal／Pregnancy／Body details 三列改連到個人頁的編輯路徑（目前都連 `/profile`）。
+
 ## 細修清單（不派任務，主 session 收集起來一次修，AGENT §3b）
 
-- 時間欄位：飲食用原生 `<input type="time">`，會顯示「06:30 PM」，設計稿是「18:30」。等 M-5b 做出時間選擇器（09-S6）後統一換掉。
+- 時間欄位：飲食用原生 `<input type="time">`，會顯示「06:30 PM」，設計稿是「18:30」。改用共用的 `TimeFields`（已在 `src/components/schedule.tsx`）。
 - 共用 Sheet 加 `trailing`（標題列右側），飲食的食物編輯「Close」改放進去。
 - `tools/shot.mjs` 加 `--fill "標籤=值"`：子任務為了打字各自寫了驗證腳本（`.cache/tmp/flow.mjs`、`.cache/m2.mjs`），之後統一用工具。
 - 從 `.fig` 匯出的 SVG 顏色是寫死的淺色值，深色模式下 onboarding 插圖、裝飾向量不會跟著變。要的話改成 inline SVG＋`currentColor`。
