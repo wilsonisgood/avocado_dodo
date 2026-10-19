@@ -1,11 +1,15 @@
 import type { ModuleRoutes } from '@/app/moduleRoutes';
-import { Placeholder } from '@/app/Placeholder';
+import { BodyEdit, EditOverview, PersonalEdit, PregnancyEdit, Saved } from './Edit';
+import { ProfilePage } from './ProfilePage';
 
-// Profile (07.Personal, 10-*). Owned by the profile module task: replace the placeholders with real screens.
+// Profile (07.Personal, 10-*). 10-S3 (choose due date) is `profile/pregnancy?pick=due`.
 export const routes: ModuleRoutes = {
-  tab: [
-    { path: 'profile', element: <Placeholder title="My profile" frames="07.Personal, 10-*" back={false} /> },
-  ],
+  tab: [{ path: 'profile', element: <ProfilePage /> }],
   stack: [
+    { path: 'profile/edit', element: <EditOverview /> },
+    { path: 'profile/personal', element: <PersonalEdit /> },
+    { path: 'profile/pregnancy', element: <PregnancyEdit /> },
+    { path: 'profile/body', element: <BodyEdit /> },
+    { path: 'profile/saved', element: <Saved /> },
   ],
 };
