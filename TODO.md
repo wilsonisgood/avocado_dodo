@@ -26,7 +26,7 @@ git、`tools/fig`（decode／spec／tokens／assets／outline）、`tools/shot.m
 | M-5a | appointments 列表／月曆 | 09-0～09-2c、09-E0、09-R* | sonnet 55 | — | ✅ 2026-10-19 合併（9/22 輪）|
 | M-5b | appointments 新增／編輯／詳情 | 09-3～09-13、09-S* | sonnet 60 | —（拆成 list/ 與 form/ 後可平行） | ✅ 2026-10-19 合併（14/26輪）|
 | M-6 | records（05.Health Record 彙整頁） | 05.Health Record | sonnet 40 | M-2、M-3、M-4 | ✅ 2026-10-19 合併（11/18 輪）|
-| M-7 | profile | 07.Personal、10-* | sonnet 60 | — | 🔵 sonnet／26 輪，worktree `.claude/worktrees/profile`、分支 `feat/profile` |
+| M-7 | profile | 07.Personal、10-* | sonnet 60 | — | ✅ 2026-10-19 合併（21/26 輪）|
 | M-8 | settings | 11-* | sonnet 55 | — | 🔵 sonnet／24 輪，worktree `.claude/worktrees/settings`、分支 `feat/settings` |
 | M-9 | tasks／shop | 06.Task、12-*（51 個 frame，多數是點數狀態） | opus 70 | M-2、M-4 | 🔵 opus／30 輪，worktree `.claude/worktrees/tasks`、分支 `feat/tasks` |
 | M-10 | home | 04.Main Page | sonnet 45 | —（只透過資料層與路由約定） | ✅ 2026-10-19 合併（16/22輪）|
