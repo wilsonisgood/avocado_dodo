@@ -5,11 +5,11 @@ import { Button, MonthCalendar, RecordEmpty, RecordHeader, RecordPage, Segmented
 import { useAppointments } from '@/data/queries';
 import { today as todayISO } from '@/data/services';
 import type { Appointment, ISODate } from '@/data/types';
+import { tr } from '@/i18n';
+import { fmtMonthYear } from '@/i18n/format';
 import { ScheduleCard } from '../ScheduleCard';
+import { messages } from '../i18n';
 import { cardTexts, dayHeading, defaultDay, eventDates, splitAppointments, upcomingSummary, type ListNotice, type Tab, type View } from './logic';
-
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const monthName = (d: ISODate) => `${MONTHS[Number(d.slice(5, 7)) - 1]} ${d.slice(0, 4)}`;
 
 function ListCard({ a, today, onClick }: { a: Appointment; today: ISODate; onClick: () => void }) {
     const t = cardTexts(a, today);
@@ -18,6 +18,7 @@ function ListCard({ a, today, onClick }: { a: Appointment; today: ISODate; onCli
 
 /** 09-0 Upcoming · 09-1 Past · 09-2/2b/2c Calendar · 09-E0 Empty · 09-R1…R3 after delete / complete. */
 export function AppointmentsPage() {
+    const t = tr(messages);
     const navigate = useNavigate();
     const location = useLocation();
     const [params, setParams] = useSearchParams();
@@ -51,7 +52,7 @@ export function AppointmentsPage() {
     const open = (a: Appointment) => navigate(`/appointments/${a.id}`);
     const add = (date?: ISODate) => navigate(date ? `/appointments/new?date=${date}` : '/appointments/new');
 
-    const header = <RecordHeader title="Health appointments" onBack={leave} />;
+    const header = <RecordHeader title={t.title} onBack={leave} />;
     if (!all) return <RecordPage className="gap-4">{header}</RecordPage>;
 
     const { upcoming, past } = splitAppointments(all, today);
@@ -59,8 +60,8 @@ export function AppointmentsPage() {
 
     const controls = (
         <>
-            <SegmentedTabs<Tab> options={[{ value: 'upcoming', label: 'Upcoming' }, { value: 'past', label: 'Past' }]} value={tab} onChange={(v) => setParam('tab', v === 'past' ? 'past' : null)} />
-            <SegmentedTabs<View> options={[{ value: 'list', label: 'List' }, { value: 'calendar', label: 'Calendar' }]} value={view} onChange={(v) => setParam('view', v === 'calendar' ? 'calendar' : null)} />
+            <SegmentedTabs<Tab> options={[{ value: 'upcoming', label: t.upcoming }, { value: 'past', label: t.past }]} value={tab} onChange={(v) => setParam('tab', v === 'past' ? 'past' : null)} />
+            <SegmentedTabs<View> options={[{ value: 'list', label: t.list }, { value: 'calendar', label: t.calendar }]} value={view} onChange={(v) => setParam('view', v === 'calendar' ? 'calendar' : null)} />
         </>
     );
 
@@ -75,11 +76,11 @@ export function AppointmentsPage() {
                 <MonthCalendar month={shown} onMonthChange={setMonth} selected={selected} onSelect={setPicked} events={eventDates(current)} />
                 <p className="type-caption-strong text-text-secondary">{dayHeading(selected, day.length)}</p>
                 {day.length === 0 ? (
-                    <RecordEmpty title="Nothing planned today">Enjoy a little breathing room, or add an appointment.</RecordEmpty>
+                    <RecordEmpty title={t.nothingToday}>{t.nothingTodayBody}</RecordEmpty>
                 ) : (
                     day.map((a) => <ListCard key={a.id} a={a} today={today} onClick={() => open(a)} />)
                 )}
-                {(day.length === 0 || tab === 'upcoming') && <Button block onClick={() => add(selected)}>{day.length === 0 ? 'Add for this day' : '＋ Add appointment'}</Button>}
+                {(day.length === 0 || tab === 'upcoming') && <Button block onClick={() => add(selected)}>{day.length === 0 ? t.addForDay : t.addAppt}</Button>}
             </RecordPage>
         );
     }
@@ -89,8 +90,8 @@ export function AppointmentsPage() {
             <RecordPage className="gap-4">
                 {header}
                 {controls}
-                <RecordEmpty title="Make space for what's next">No upcoming appointments. Add a prenatal visit, injection, blood test or other health plan.</RecordEmpty>
-                <Button block onClick={() => add()}>Add first appointment</Button>
+                <RecordEmpty title={t.emptyTitle}>{t.emptyBody}</RecordEmpty>
+                <Button block onClick={() => add()}>{t.addFirst}</Button>
             </RecordPage>
         );
     }
@@ -100,10 +101,10 @@ export function AppointmentsPage() {
             <RecordPage className="gap-4">
                 {header}
                 {controls}
-                <Button block onClick={() => add()}>＋ Add appointment</Button>
-                <p className="type-caption-strong text-text-secondary">{upcomingSummary(upcoming, monthName)}</p>
+                <Button block onClick={() => add()}>{t.addAppt}</Button>
+                <p className="type-caption-strong text-text-secondary">{upcomingSummary(upcoming, fmtMonthYear)}</p>
                 {upcoming.map((a) => <ListCard key={a.id} a={a} today={today} onClick={() => open(a)} />)}
-                <p className="type-caption-default text-text-secondary">Keep prenatal visits, injections, blood tests and other health plans here.</p>
+                <p className="type-caption-default text-text-secondary">{t.keepHere}</p>
             </RecordPage>
         );
     }
@@ -112,10 +113,10 @@ export function AppointmentsPage() {
         <RecordPage className="gap-4">
             {header}
             {controls}
-            <h2 className="type-heading-small text-text-primary">Past appointments</h2>
+            <h2 className="type-heading-small text-text-primary">{t.pastTitle}</h2>
             {past.map((a) => <ListCard key={a.id} a={a} today={today} onClick={() => open(a)} />)}
-            <p className="type-caption-default text-text-secondary">Past dates aren't marked complete automatically. Update the status in details.</p>
-            <Button block variant="outline" onClick={() => add()}>＋ Add appointment</Button>
+            <p className="type-caption-default text-text-secondary">{t.pastNote}</p>
+            <Button block variant="outline" onClick={() => add()}>{t.addAppt}</Button>
         </RecordPage>
     );
 }

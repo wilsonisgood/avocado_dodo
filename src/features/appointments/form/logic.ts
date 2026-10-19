@@ -2,7 +2,10 @@
 import { shortDateWithWeekday } from '@/data/labels';
 import { reminderText } from '@/data/reminders';
 import { toISODate } from '@/data/rules';
-import type { Appointment, AppointmentType, ISODate, ISODateTime, Reminder, TimeOfDay } from '@/data/types';
+import { tr } from '@/i18n';
+import { fmtMonthDay, fmtTime } from '@/i18n/format';
+import { messages } from '../i18n';
+import type { Appointment, AppointmentType, ISODate, Reminder, TimeOfDay } from '@/data/types';
 
 export type Draft = {
   type: AppointmentType;
@@ -43,48 +46,43 @@ export {
 } from '@/data/reminders';
 
 // ---- details (09-6…09-13) ----------------------------------------------------------------------
-const pad = (n: number) => String(n).padStart(2, '0');
-const timeOf = (at: ISODateTime) => {
-  const d = new Date(at);
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
-};
 export const isPast = (a: Pick<Appointment, 'date' | 'time'>, nowDate: ISODate, nowTime: TimeOfDay) => `${a.date}T${a.time}` < `${nowDate}T${nowTime}`;
 
 export type DetailView = {
-  status: 'Upcoming' | 'Done' | 'Not marked complete';
+  status: string;
   banner?: string;
   /** Last line of the card. */
   cardLine: string;
   /** Detail of the "Reminder" row. */
   rowDetail: string;
-  primaryLabel: 'Mark complete' | 'Mark incomplete';
+  primaryLabel: string;
   /** Mark complete (true) / incomplete (false) when the primary button is pressed. */
   primaryDone: boolean;
 };
 
 export function detailView(a: Appointment, nowDate: ISODate, nowTime: TimeOfDay): DetailView {
+  const t = tr(messages);
   if (a.completedAt) {
     const day = toISODate(a.completedAt);
     return {
-      status: 'Done',
-      banner: 'Marked complete. Take care!',
-      cardLine: day > a.date ? 'Completed · Added later' : `Completed · ${shortDateWithWeekday(day).replace(/, \w+$/, '')}, ${timeOf(a.completedAt)}`,
-      rowDetail: 'Completed. No more reminders will be sent.',
-      primaryLabel: 'Mark incomplete',
+      status: t.statusDone,
+      banner: t.markedComplete,
+      cardLine: day > a.date ? t.completedLater : t.completedAt(fmtMonthDay(day), fmtTime(a.completedAt)),
+      rowDetail: t.completedRow,
+      primaryLabel: t.markIncomplete,
       primaryDone: false,
     };
   }
   if (isPast(a, nowDate, nowTime)) {
-    const t = 'Past date · Update status anytime';
-    return { status: 'Not marked complete', cardLine: t, rowDetail: t, primaryLabel: 'Mark complete', primaryDone: true };
+    return { status: t.statusNotMarked, cardLine: t.pastUpdate, rowDetail: t.pastUpdate, primaryLabel: t.markComplete, primaryDone: true };
   }
   const label = reminderText(a.reminder);
   const multi = a.reminder.kind === 'preset' && a.reminder.preset === '1d+1h';
   return {
-    status: 'Upcoming',
-    cardLine: a.reminder.kind === 'none' ? 'No reminder' : `${multi ? 'Reminders' : 'Reminder'}: ${label}`,
+    status: t.statusUpcoming,
+    cardLine: a.reminder.kind === 'none' ? t.noReminder : t.remindersLine(label, multi),
     rowDetail: label,
-    primaryLabel: 'Mark complete',
+    primaryLabel: t.markComplete,
     primaryDone: true,
   };
 }
